@@ -1,24 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
+import { ReactNotifications } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css';
+import { BrowserRouter } from 'react-router-dom';
+import AppRouter from './comps/routing/routing';
+import { AuthProvider } from './comps/auth/authctx';
+import { initClient } from './services/apiService'
 
 function App() {
+  let token = localStorage.getItem("token");
+  initClient(token);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="App">
+          <ReactNotifications />
+          <AppRouter />
+        </div>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
