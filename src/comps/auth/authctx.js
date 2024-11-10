@@ -5,6 +5,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  console.log("Rendering AuthProvider()");
   const [token, setToken] = useState(null);
 
   const saveToken = (newToken) => {
@@ -16,7 +17,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('authToken');
   };
-
+  
   return (
     <AuthContext.Provider value={{ token, saveToken, removeToken }}>
       {children}

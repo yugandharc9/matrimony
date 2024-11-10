@@ -1,10 +1,33 @@
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';  // Importing eye icons from react-icons
-import { TextField, FormHelperText,MenuItem } from "@mui/material";
+import { TextField, FormHelperText, MenuItem } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { forwardRef } from "react";
 
-const Input = ({ placeholder, type, value, isRequired, onChange, labelName, helperText, inputProps }) => {
+const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText, inputProps, }, ref) => {
+  console.log('rendering Input');
+  const [value, setValue] = useState('');
+
+  const handleChange = (e) => {
+    setValue(e.target.value);
+  }
+
+  const getVal = () => {
+    return value;
+  }
+
+  const setVal = (v) => {
+    setValue(v);
+  }
+
+
+  useImperativeHandle(ref, () => ({
+    getVal,
+    setVal,
+  }));
+
+
   return (
     <>
       <TextField
@@ -20,7 +43,7 @@ const Input = ({ placeholder, type, value, isRequired, onChange, labelName, help
         label={labelName}
         required={isRequired}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         InputProps={inputProps}
         sx={{
           '& .MuiOutlinedInput-root': {
@@ -49,22 +72,39 @@ const Input = ({ placeholder, type, value, isRequired, onChange, labelName, help
       </TextField>
     </>
   )
-};
+});
 
-const PasswordInput = ({ value, onChange }) => {
+const PasswordInput = forwardRef(({ prop }, ref) => {
+  console.log('rendering PasswordInput');
+
   const [showPassword, setShowPassword] = useState(false);
+  const [pwd, setPwd] = useState('');
+
+  const handleChange = (e) => {
+    setPwd(e.target.value);
+  }
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+
+  const getVal = () => {
+    return pwd;
+  }
+
+  useImperativeHandle(ref, () => ({
+    getVal,
+  }));
 
   return (
     <>
       <Input
         labelName="Password"
         type={showPassword ? 'text' : 'password'}
-        value={value}
-        onChange={onChange}
+        value={pwd}
+        ref={ref}
+        onChange={handleChange}
         inputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -88,9 +128,31 @@ const PasswordInput = ({ value, onChange }) => {
       />
     </>
   )
-}
+});
 
-const SelectInput = ({ placeholder, labelName, isRequired, value, onChange, selectVals, helperText, fullWidth, defaultValue }) => {
+const SelectInput = forwardRef(({ placeholder, labelName, isRequired, selectVals, helperText }, ref) => {
+  const [value, setValue] = useState("")
+  console.log('Rendering SelectInput ', value);
+
+  const handleChange = (e) => {
+  console.log('Rendering changed b4 SelectInput ', value);
+    setValue(e.target.value);
+  console.log('Rendering changed after SelectInput ', value);
+  }
+
+  const getVal = () => {
+    return value;
+  }
+
+  const setVal = (v) => {
+    setValue(v);
+  }
+
+  useImperativeHandle(ref, () => ({
+    getVal,
+    setVal,
+  }))
+
   return (<>
     <TextField
       className="bg-white rounded-lg"
@@ -105,9 +167,9 @@ const SelectInput = ({ placeholder, labelName, isRequired, value, onChange, sele
       placeholder={placeholder}
       label={labelName}
       required={isRequired}
-      defaultValue={defaultValue}
+      defaultValue=""
       value={value}
-      onChange={onChange}
+      onChange={handleChange}
       sx={{
         '& .MuiOutlinedInput-root': {
           backgroundColor: '#492533', // Background color
@@ -143,18 +205,18 @@ const SelectInput = ({ placeholder, labelName, isRequired, value, onChange, sele
       }}>
       {selectVals && selectVals.map((option) => (
         <MenuItem key={option.value} value={option.value}
-        sx={{
-          backgroundColor: '#492533', // Background color for menu item
-          color: '#FEF5EC', // Text color for menu item
-          '&:hover': {
-            backgroundColor: '#F0D0A6', // Hover background color
-            color: '#492533', // Hover text color
-          },
-          '&.Mui-selected': {
-            backgroundColor: '#F0D0A6', // Hover background color
-            color: '#492533', // Hover text color
-          },
-        }}
+          sx={{
+            backgroundColor: '#492533', // Background color for menu item
+            color: '#FEF5EC', // Text color for menu item
+            '&:hover': {
+              backgroundColor: '#F0D0A6', // Hover background color
+              color: '#492533', // Hover text color
+            },
+            '&.Mui-selected': {
+              backgroundColor: '#F0D0A6', // Hover background color
+              color: '#492533', // Hover text color
+            },
+          }}
         >
           {option.label}
         </MenuItem>
@@ -163,10 +225,30 @@ const SelectInput = ({ placeholder, labelName, isRequired, value, onChange, sele
   </>
   )
 
-}
+});
 
 
-const InputArea = ({ placeholder,  value, isRequired, onChange, labelName, helperText, rows }) => {
+const InputArea = forwardRef(({ placeholder,  isRequired,  labelName, helperText, rows }, ref) => {
+  const [value, setValue] = useState("")
+
+  const handleChange = (e) => {
+  console.log('Rendering changed b4 InputArea ', value);
+    setValue(e.target.value);
+  console.log('Rendering changed after InputArea ', value);
+  }
+
+  const getVal = () => {
+    return value;
+  }
+
+  const setVal = (v) => {
+    setValue(v);
+  }
+
+  useImperativeHandle(ref, () => ({
+    getVal,
+    setVal
+  }))
   return (
     <>
       <TextField
@@ -182,7 +264,7 @@ const InputArea = ({ placeholder,  value, isRequired, onChange, labelName, helpe
         label={labelName}
         required={isRequired}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         rows={rows}
         sx={{
           '& .MuiOutlinedInput-root': {
@@ -211,6 +293,6 @@ const InputArea = ({ placeholder,  value, isRequired, onChange, labelName, helpe
       </TextField>
     </>
   )
-};
+});
 
-export { Input, PasswordInput, SelectInput,InputArea };
+export { Input, PasswordInput, SelectInput, InputArea };

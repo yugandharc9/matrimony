@@ -20,7 +20,10 @@ export const login = (data) => apiClient.post(`/api/v1/sign_in`, data);
 
 export const register = (data) => apiClient.post(`/api/v1/sign_up`, data);
 
-export const createProfile = (data) => apiClient.post('/api/v1/profiles', data);
+export const createProfile = (data) => apiClient.post('/api/v1/detail/profile', data);
 
 export const aboutMeAndContact = (data) => apiClient.post('/api/v1/contacts', data);
 
+export const resetPassword = (data) => apiClient.post('/api/v1/resetpassword', data);
+
+export const profileCompletionStatus = () => apiClient.get('/api/v1/profile_completion');

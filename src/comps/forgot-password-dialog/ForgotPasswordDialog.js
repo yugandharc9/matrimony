@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { resetPassword } from '../../services/apiService';
+
 import {
   Dialog,
   DialogTitle,
@@ -7,6 +9,7 @@ import {
   Button,
   TextField,
 } from '@mui/material';
+import showNotification from '../notify/notify';
 
 function ForgotPasswordDialog({ open, onClose }) {
   const [email, setEmail] = useState('');
@@ -15,35 +18,50 @@ function ForgotPasswordDialog({ open, onClose }) {
     setEmail(event.target.value);
   };
 
-  const handleSubmit = () => {
-    // Perform the password reset action here, like calling an API
-    console.log("Password reset link sent to:", email);
+  const handleSubmit = async () => {
+    if (email == ""){
+      showNotification("danger","","Email is required",2000)
+      return  
+    }
+    try {
+      const response = await resetPassword({ reset_password: { email: email } });
+      if (response.status == 200) {
+        showNotification("success", "", "Reset password link sent",3000)
+      }
+    } catch (e) {
+      if (e.response.status == 422){  
+      showNotification("danger","","No user found for "+ email,2000)
+      }
+      console.log(e);
+    }
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Forgot Password</DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          label="Email Address"
-          type="email"
-          fullWidth
-          variant="outlined"
-          value={email}
-          onChange={handleEmailChange}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit} color="primary">
-          Send Reset Link
-        </Button>
-      </DialogActions>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            label="Email Address"
+            placeholder='Enter registered email'
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={email}
+            onChange={handleEmailChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSubmit} color="primary">
+            Send Reset Link
+          </Button>
+          <Button onClick={onClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
     </Dialog>
   );
 }
