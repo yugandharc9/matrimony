@@ -9,7 +9,8 @@ import SentChatRequestsPage from "../sent-chat/SentChat";
 import ReceivedChatRequestsPage from "../recv-chat/RecvChat";
 import MyChatsPage from "../my-chats/MyChats";
 import SubscriptionsPage from "../subscriptions/subscriptions";
-import UploadPage from "../add-photos/AddPhotos";
+import UploadDocPage from "../add-photos/AddDocs";
+import UploadPicsPage from "../add-photos/AddPhotos";
 
 const AppRouter = () => {
    return ( <div>
@@ -25,7 +26,8 @@ const AppRouter = () => {
       <Route path="/received-requests" element={<ReceivedChatRequestsPage />} />
       <Route path="/sent-requests" element={<SentChatRequestsPage />} /> 
       <Route path="/subscription" element={<SubscriptionsPage />} /> 
-      <Route path="/upload" element={<UploadPage />} /> 
+      <Route path="/upload/doc" element={<UploadDocPage />} /> 
+      <Route path="/upload/pics" element={<UploadPicsPage />} /> 
     </Routes>
   </div>)
 }

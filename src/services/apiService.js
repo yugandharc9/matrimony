@@ -4,6 +4,7 @@ import axios from 'axios';
 //import { useAuth } from '../comps/auth/authctx';
 
 let apiClient = null; 
+let apiClientUpload = null; 
 
 export const initClient = (token) => { 
     apiClient = axios.create({
@@ -12,6 +13,14 @@ export const initClient = (token) => {
         'Content-Type': 'application/json',
         'X-Requested-With': process.env.REACT_APP_SERVER_HEADER,
         'Authorization': `Bearer ${token}`
+    },
+});
+    apiClientUpload = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+    headers: {
+        'X-Requested-With': process.env.REACT_APP_SERVER_HEADER,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
     },
 });
 }
@@ -27,3 +36,7 @@ export const aboutMeAndContact = (data) => apiClient.post('/api/v1/contacts', da
 export const resetPassword = (data) => apiClient.post('/api/v1/resetpassword', data);
 
 export const profileCompletionStatus = () => apiClient.get('/api/v1/profile_completion');
+
+export const uploadVerificationDoc = (formData) => apiClientUpload.post('/api/v1/verification/doc',formData);
+
+export const uploadPics = (formData) => apiClientUpload.post('/api/v1/bulk/picb',formData);

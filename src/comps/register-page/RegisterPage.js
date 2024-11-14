@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button } from '../button/button';
+import { FormButton } from '../button/button';
 import { Logo } from '../logo/logo'
 import { Input, PasswordInput } from '../input/input'
 import showNotification from '../notify/notify';
@@ -78,9 +78,9 @@ const RegisterPage = () => {
                         ref={phone}
                     />
                     <PasswordInput ref={password} />
-                    <Button name="Register" type="submit" ref={btnRef} onClick={handleButtonClick} />
+                    <FormButton name="Register" type="submit" ref={btnRef} onClick={handleButtonClick} />
                     <hr className="w-4/5 h-2 border-custom-c2" />
-                    <Button type="button" name="Login" onClick={handleLogin} />
+                    <FormButton type="button" name="Login" onClick={handleLogin} />
                 </div>
             </div>
         </form>

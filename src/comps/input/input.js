@@ -5,7 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import { forwardRef } from "react";
 
-const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText, inputProps, }, ref) => {
+const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText, inputProps, inputLabelProps }, ref) => {
   console.log('rendering Input');
   const [value, setValue] = useState('');
 
@@ -44,10 +44,11 @@ const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText
         required={isRequired}
         value={value}
         onChange={handleChange}
-        InputProps={inputProps}
+        InputProps={{...inputProps}}
+        InputLabelProps={{...inputLabelProps}}
         sx={{
           '& .MuiOutlinedInput-root': {
-            backgroundColor: '#492533', // Background color
+            backgroundColor: '#492532', // Background color
             color: '#F0D0A6', // Text color
             '& fieldset': {
               borderColor: '#FEF5EC', // Default white border color
@@ -294,5 +295,6 @@ const InputArea = forwardRef(({ placeholder,  isRequired,  labelName, helperText
     </>
   )
 });
+
 
 export { Input, PasswordInput, SelectInput, InputArea };

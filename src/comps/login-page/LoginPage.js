@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '../button/button';
+import { FormButton } from '../button/button';
 import { Logo } from '../logo/logo'
 import { Input, PasswordInput } from '../input/input'
 import showNotification from '../notify/notify';
@@ -82,9 +82,9 @@ const LoginPage = () => {
                     <PasswordInput ref={password} />
                     <p onClick={handleOpenDialog} className='text-custom-c2'>Forgot password?</p>
                     <ForgotPasswordDialog open={open} onClose={handleCloseDialog} />
-                    <Button type="submit" name="Login" ref={btnRef} onClick={handleButtonClick} />
+                    <FormButton type="submit" name="Login" ref={btnRef} onClick={handleButtonClick} />
                     <hr className="w-4/5 h-2 border-custom-c2" />
-                    <Button type="button" name="Register" onClick={handleRegister} />
+                    <FormButton type="button" name="Register" onClick={handleRegister} />
                 </div>
             </div>
         </form>
