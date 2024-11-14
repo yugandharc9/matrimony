@@ -11,10 +11,12 @@ import MyChatsPage from "../my-chats/MyChats";
 import SubscriptionsPage from "../subscriptions/subscriptions";
 import UploadDocPage from "../add-photos/AddDocs";
 import UploadPicsPage from "../add-photos/AddPhotos";
+import {FilterMenu} from "../filter/FilterMenu";
 
 const AppRouter = () => {
    return ( <div>
     <Routes>
+      <Route path="/" element={<FilterMenu open={true} />} /> 
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<RegisterPage />} />
       <Route path="/info" element={<AddProfileInfoPage operation="create" />} />

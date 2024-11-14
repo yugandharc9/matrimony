@@ -40,3 +40,5 @@ export const profileCompletionStatus = () => apiClient.get('/api/v1/profile_comp
 export const uploadVerificationDoc = (formData) => apiClientUpload.post('/api/v1/verification/doc',formData);
 
 export const uploadPics = (formData) => apiClientUpload.post('/api/v1/bulk/picb',formData);
+
+export const getProfiles = (qp) => apiClient.get(`/api/v1/profiles${qp}`);
