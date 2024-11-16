@@ -3,89 +3,33 @@ import React, { useState } from 'react';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import { Home, Search, Notifications, Message, AccountCircle } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
+//import { useChannel } from '../../hooks/PhoenixHook';
+//import { useAuth } from '../auth/authctx';
 
-const BottomBar = () => {
+
+
+
+  const BottomNavbar2 = () => {
+  console.log('BottomBar2 RENDERED');
   const [value, setValue] = useState(0);
+  //const {token,userId} = useAuth();
+  //console.log("LOG - " ,value,token,"STATE",state,"BROADCAST",broadcast );
+    
+  // const countReducer = (state, {event, payload}) => {
+  //   switch (event) {
+  //     case "publish":
+  //       console.log(payload);
+  //     default: 
+  //       console.log("unclassified events", event);
+  //   } 
+  // }
 
-  return (
-    <BottomNavigation
-      value={value}
-      onChange={(event, newValue) => setValue(newValue)}
-      showLabels
-      sx={{ width: '100%', position: 'fixed', bottom: 0, backgroundColor: '#492533', }}
-    >
-      <BottomNavigationAction
-        label="Home"
-        icon={<Home />}
-        component={Link}
-        sx={{
-            color: value === 0 ? '#FFFFFF' : '#492533',
-            '&.Mui-selected': {
-              color: '#FFFFFF',
-            },
-          }}
-        to="/home"
-      />
-      <BottomNavigationAction
-        label="Search"
-        icon={<Search />}
-        component={Link}
-        to="/search"
-        sx={{
-            color: value === 0 ? '#FFFFFF' : '#492533',
-            '&.Mui-selected': {
-              color: '#FFFFFF',
-            },
-          }}
-      />
-      <BottomNavigationAction
-        label="Notifications"
-        icon={<Notifications />}
-        component={Link}
-        to="/notifications"
-        sx={{
-            color: value === 0 ? '#FFFFFF' : '#492533',
-            '&.Mui-selected': {
-              color: '#FFFFFF',
-            },
-          }}
-      />
-      <BottomNavigationAction
-        label="Messages"
-        icon={<Message />}
-        component={Link}
-        to="/messages"
-        sx={{
-            color: value === 0 ? '#FFFFFF' : '#492533',
-            '&.Mui-selected': {
-              color: '#FFFFFF',
-            },
-          }}
-      />
-      <BottomNavigationAction
-        label="Profile"
-        icon={<AccountCircle />}
-        component={Link}
-        to="/profile"
-        sx={{
-            color: value === 0 ? '#FFFFFF' : '#492533',
-            '&.Mui-selected': {
-              color: '#FFFFFF',
-            },
-          }}
-      />
-    </BottomNavigation>
-  );
-};
-
-
-
-const BottomNavbar2 = () => {
-  const [value, setValue] = useState(0);
+  // useChannel(`pub${userId}`,countReducer,{},token,userId);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+    
 
   return (
     <BottomNavigation

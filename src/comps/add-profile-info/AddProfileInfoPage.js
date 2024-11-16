@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 
 
-const AddProfileInfoPage = ({ operation: operation }) => {
+const AddProfileInfoPage = () => {
     console.log('Rendering AddProfileInfopage');
     const navigate = useNavigate();
     const name = useRef();
@@ -37,13 +37,13 @@ const AddProfileInfoPage = ({ operation: operation }) => {
     const relation = useRef();
     const aboutme = useRef();
     const expectation = useRef();
-    const { saveToken } = useAuth();
+    const { token,saveToken } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         btnRef.current?.setLoadingOn();
         try {
-            const response = await createProfile({
+            const response = await createProfile(token,{
                 profile: {
                     height: height.current?.getVal(),
                     name: name.current?.getVal(),

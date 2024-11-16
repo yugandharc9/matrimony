@@ -5,6 +5,10 @@ import { BaseLayout, BaseForm } from '../layout/BaseLayout';
 import { FormButton } from '../button/button';
 import { uploadVerificationDoc } from '../../services/apiService';
 import showNotification from '../notify/notify';
+import { useAuth } from '../auth/authctx';
+import { profileCompletionStatus } from '../../services/apiService';
+import { Redirector } from '../routing/redirector';
+import { useNavigate } from 'react-router-dom';
 
 const UploadDocPage = () => {
   const [idCard, setIdCard] = useState(null);  // Stores the selected government ID file
@@ -12,6 +16,8 @@ const UploadDocPage = () => {
   const formRef = useRef();
   const btnRef = useRef();
   const fileRef = useRef();
+  const {token} = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,13 +32,14 @@ const UploadDocPage = () => {
     btnRef.current?.setLoadingOn();
 
     try {
-      const response = await uploadVerificationDoc(formData);
+      const response = await uploadVerificationDoc(token,formData);
       console.log(response.data); // Log the server response data
       console.log(response.status);
-      showNotification("success","","Upload successful",2000);
+      navigate("/profiles");
     } catch (e) {
       console.log(e.response);
       showNotification("danger","","Something went wrong",2000);
+      navigate("/profiles");
     } finally {
       btnRef.current?.setLoadingOff();
     }

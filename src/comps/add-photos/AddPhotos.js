@@ -3,8 +3,12 @@ import { Box, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { BaseLayout, BaseForm } from '../layout/BaseLayout';
 import { FormButton } from '../button/button';
-import { uploadPics, uploadVerificationDoc } from '../../services/apiService';
+import { uploadPics } from '../../services/apiService';
 import showNotification from '../notify/notify';
+import { useAuth } from '../auth/authctx';
+import { Redirector } from '../routing/redirector';
+import { useNavigate} from 'react-router-dom';
+import { profileCompletionStatus } from '../../services/apiService';
 
 const UploadPicsPage = () => {
     const [idCards, setIdCards] = useState([]);  // Stores the selected files
@@ -12,6 +16,8 @@ const UploadPicsPage = () => {
     const formRef = useRef();
     const btnRef = useRef();
     const fileRef = useRef();
+    const {token} = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,9 +33,11 @@ const UploadPicsPage = () => {
         btnRef.current?.setLoadingOn();
 
         try {
-            const response = await uploadPics(formData);
+            const response = await uploadPics(token,formData);
             showNotification("success", "", "Upload successful",2000);
+            navigate('/profiles');
         } catch (e) {
+            navigate('/profiles');
             showNotification("danger", "", "Something went wrong",2000);
         } finally {
             btnRef.current?.setLoadingOff();

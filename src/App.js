@@ -3,20 +3,20 @@ import { ReactNotifications } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './comps/routing/routing';
-import { AuthProvider, useAuth } from './comps/auth/authctx';
-import { initClient } from './services/apiService'
+import { AuthProvider } from './comps/auth/authctx';
+import { SocketProvider } from './hooks/PhoenixHook'
 
 function App() {
-  console.log("Rendering App()");
-  let token = localStorage.getItem("token");
-  initClient(token);
+  console.log('rendering App()');
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true }}>
       <AuthProvider>
-        <div className="App">
-          <ReactNotifications />
-          <AppRouter />
-        </div>
+        <SocketProvider wsUrl='wss://levavivah.com/socket' >
+          <div className="App">
+            <ReactNotifications />
+            <AppRouter />
+          </div>
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   );
