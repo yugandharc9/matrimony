@@ -9,7 +9,6 @@ const SocketContext = createContext();
 
 export const SocketProvider = ({wsUrl,  children}) => {
   const {token} = useAuth();
-  console.log('SocketProvider token', token);
   const socket = new Socket(wsUrl, { params: {token: token} })
 
   useEffect(() => { console.log('useEffect of SocketProvier - '); socket.connect(); }, [token, wsUrl])

@@ -6,7 +6,6 @@ import IconButton from '@mui/material/IconButton';
 import { forwardRef } from "react";
 
 const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText, inputProps, inputLabelProps }, ref) => {
-  console.log('rendering Input');
   const [value, setValue] = useState('');
 
   const handleChange = (e) => {
@@ -76,7 +75,6 @@ const Input = forwardRef(({ placeholder, type, isRequired, labelName, helperText
 });
 
 const PasswordInput = forwardRef(({ prop }, ref) => {
-  console.log('rendering PasswordInput');
 
   const [showPassword, setShowPassword] = useState(false);
   const [pwd, setPwd] = useState('');
@@ -133,12 +131,9 @@ const PasswordInput = forwardRef(({ prop }, ref) => {
 
 const SelectInput = forwardRef(({ placeholder, labelName, isRequired, selectVals, helperText }, ref) => {
   const [value, setValue] = useState("")
-  console.log('Rendering SelectInput ', value);
 
   const handleChange = (e) => {
-  console.log('Rendering changed b4 SelectInput ', value);
     setValue(e.target.value);
-  console.log('Rendering changed after SelectInput ', value);
   }
 
   const getVal = () => {
@@ -233,9 +228,7 @@ const InputArea = forwardRef(({ placeholder,  isRequired,  labelName, helperText
   const [value, setValue] = useState("")
 
   const handleChange = (e) => {
-  console.log('Rendering changed b4 InputArea ', value);
     setValue(e.target.value);
-  console.log('Rendering changed after InputArea ', value);
   }
 
   const getVal = () => {

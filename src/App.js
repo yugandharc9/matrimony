@@ -7,7 +7,6 @@ import { AuthProvider } from './comps/auth/authctx';
 import { SocketProvider } from './hooks/PhoenixHook'
 
 function App() {
-  console.log('rendering App()');
   return (
     <BrowserRouter future={{ v7_startTransition: true }}>
       <AuthProvider>

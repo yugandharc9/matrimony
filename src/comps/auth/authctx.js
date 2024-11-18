@@ -5,7 +5,6 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  console.log("Rendering AuthProvider()");
 
   const getLocalStorageItem = (key) => {
     try {

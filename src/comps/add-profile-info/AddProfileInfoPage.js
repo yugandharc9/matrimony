@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Input, SelectInput, InputArea } from "../input/input";
 import { educationList, rashis, devnagriInitials, genders, heights, maritialStats, yesNo, yesNoDontKnow } from "../../constants/constants";
 import { FormButton } from '../button/button';
@@ -10,7 +10,7 @@ import { useAuth } from '../auth/authctx';
 
 
 const AddProfileInfoPage = () => {
-    console.log('Rendering AddProfileInfopage');
+    useEffect(() =>{navigate("/profiles")},[]); 
     const navigate = useNavigate();
     const name = useRef();
     const lastName = useRef();
@@ -83,7 +83,6 @@ const AddProfileInfoPage = () => {
                 showNotification("danger", "", response.data.error, 2000);
             }
         } catch (e) {
-            console.log(e);
             showNotification("danger", "", e.response.data.error, 2000);
         } finally {
             btnRef.current?.setLoadingOff();

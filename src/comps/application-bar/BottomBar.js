@@ -10,17 +10,13 @@ import { Link } from 'react-router-dom';
 
 
   const BottomNavbar2 = () => {
-  console.log('BottomBar2 RENDERED');
   const [value, setValue] = useState(0);
   //const {token,userId} = useAuth();
-  //console.log("LOG - " ,value,token,"STATE",state,"BROADCAST",broadcast );
     
   // const countReducer = (state, {event, payload}) => {
   //   switch (event) {
   //     case "publish":
-  //       console.log(payload);
   //     default: 
-  //       console.log("unclassified events", event);
   //   } 
   // }
 

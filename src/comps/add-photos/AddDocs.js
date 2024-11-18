@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { BaseLayout, BaseForm } from '../layout/BaseLayout';
@@ -6,11 +6,10 @@ import { FormButton } from '../button/button';
 import { uploadVerificationDoc } from '../../services/apiService';
 import showNotification from '../notify/notify';
 import { useAuth } from '../auth/authctx';
-import { profileCompletionStatus } from '../../services/apiService';
-import { Redirector } from '../routing/redirector';
 import { useNavigate } from 'react-router-dom';
 
 const UploadDocPage = () => {
+  useEffect(() =>{navigate("/profiles")},[]); 
   const [idCard, setIdCard] = useState(null);  // Stores the selected government ID file
   const [preview, setPreview] = useState(null); // Stores the preview URL
   const formRef = useRef();
@@ -27,17 +26,13 @@ const UploadDocPage = () => {
     }
 
     const formData = new FormData();
-    console.log("id card is ", idCard);
     formData.append("img_upload", idCard); // Directly add the file to FormData
     btnRef.current?.setLoadingOn();
 
     try {
       const response = await uploadVerificationDoc(token,formData);
-      console.log(response.data); // Log the server response data
-      console.log(response.status);
       navigate("/profiles");
     } catch (e) {
-      console.log(e.response);
       showNotification("danger","","Something went wrong",2000);
       navigate("/profiles");
     } finally {

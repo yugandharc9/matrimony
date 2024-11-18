@@ -1,7 +1,7 @@
 import React, { forwardRef, useState, useImperativeHandle } from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
-export const ConfirmDialog = forwardRef(({ message, userID, onConfirm }, ref) => {
+export const ConfirmDialog = forwardRef(({ message, userID,profileID, onConfirm }, ref) => {
     const [open, setOpen] = useState(false);
 
     const handleClose = () => setOpen(false);
@@ -12,7 +12,7 @@ export const ConfirmDialog = forwardRef(({ message, userID, onConfirm }, ref) =>
 
     const handleConfirm = () => {
         if (onConfirm) {
-            onConfirm({ actionConfirmed: true, userID: userID });
+            onConfirm({ actionConfirmed: true, userID: userID,profileID: profileID });
         }
         setOpen(false);
     };

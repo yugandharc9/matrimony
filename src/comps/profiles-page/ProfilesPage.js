@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import ProfileCard from '../profile-card/profileCard';
 import { FilterAlt } from '@mui/icons-material';
@@ -14,22 +14,32 @@ const ProfilesPage = () => {
   const [profiles,setProfiles] = useState([]);
   const {token,removeToken} = useAuth();
   const navigate = useNavigate();
+  const [offset,setOffset] = useState(0);
+  const observerRef = useRef(null); // Ref for the observer
+  const [hasMore,setHasMore] = useState(null);
+  const [loading,setLoading] = useState(false);
+
 
  
-  const loadProfiles= async (offset,limit,params) => { 
+  const loadProfiles = async (limit,params) => { 
+    if (loading || (hasMore != null && !hasMore)) {
+      console.log('returning due to loading');
+      return
+    }
     let qp = `?offset=${offset}&limit=${limit}`
     const qParams = Object.entries(params).reduce((acc,[key,value]) => { return acc  + `&${key}=${value}`; },qp)
 
     try{
-      console.log("about to send request");
+      setLoading(true);
       const response = await getProfiles(token,qParams);
-      console.log("about to send request done");
-      console.log("about to send request done");
-      console.debug("response.data.data returned",response);
-      //console.log(response.data.data);
       setProfiles([...profiles,...response.data.data]);
+      setOffset(offset+6);
+      console.log('setHasMore(offset < response.data.total)',response.data.total);
+      setHasMore(offset < response.data.total);
     } catch(e){   
-      console.error('ProfilesPage loadProfiles err',e);
+      console.log('e is e',e);
+    } finally{
+      setLoading(false);
     }
   }
 
@@ -40,7 +50,6 @@ const ProfilesPage = () => {
       Redirector(completionStat, navigate);
     } catch (e) {
       if (e.response.status == 401){
-        console.log("profile completion it is  401 ");
         removeToken();
         navigate("/login");
       }
@@ -50,10 +59,25 @@ const ProfilesPage = () => {
   }
 
   useEffect(() => {
-    console.log('<<<<<<<<<<<<<<<<<ProfilesPage useEffect() running');
-    checkCompletion();
-    loadProfiles(0, 3, {});
-  }, []);
+    //checkCompletion();
+    console.log('offset is',offset);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log('entries',entries);
+        if (entries[0].isIntersecting ) {
+          console.log("loading more");
+          loadProfiles( 6, {});
+        }
+      },
+      { threshold: 1.0 } // Fully visible element triggers
+    );
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current); // Cleanup
+    };
+
+  }, [offset,hasMore,loading]);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedFilters, setSelectedFilters] = useState({});
@@ -93,7 +117,8 @@ const ProfilesPage = () => {
             degree={profile.degree}
             totalpoints={profile.points.total}
             points={profile.points}
-            userID={profile.userID}
+            userID={profile.user_id}
+            profileID={profile.id}
             context="profiles"
           />
         ))}
@@ -112,6 +137,9 @@ const ProfilesPage = () => {
         selectedFilters={selectedFilters}
         onFilterChange={handleFilterChange}
       />
+      <div ref={observerRef} style={{ height: '20px', background: 'transparent' }}>
+        {/* Empty div to act as the target for the IntersectionObserver */}
+      </div>
       <BottomBar2 />
     </div>
   );

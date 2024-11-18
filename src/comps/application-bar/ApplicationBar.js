@@ -2,7 +2,6 @@ import { AppBar,Toolbar } from "@mui/material"
 import {HorrizontalLogo} from '../logo/logo'
 
 const ApplicationBar = () => {
-    console.log('Rendering ApplicationBar');
     return (
         <>
             <AppBar position="sticky" >

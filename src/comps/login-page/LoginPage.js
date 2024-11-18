@@ -10,14 +10,12 @@ import ForgotPasswordDialog from '../forgot-password-dialog/ForgotPasswordDialog
 import {Redirector} from '../routing/redirector';
 
 const LoginPage = () => {
-    console.log('Rendering LoginPage');
     const navigate = useNavigate();
-
     const phone = useRef();
     const password = useRef();
     const btnRef = useRef();
     const formRef = useRef();
-    const { token,saveToken,saveUserId} = useAuth();
+    const {token,saveToken,saveUserId} = useAuth();
     const [open, setOpen] = useState(false);
 
     const handleOpenDialog = () => {
@@ -30,6 +28,7 @@ const LoginPage = () => {
     
     useEffect(()=> {
         if(token != null){
+            console.log('navigation from useEffect LoginPage to profiles');
             navigate("/profiles");
         }
     },[token]);
@@ -38,10 +37,7 @@ const LoginPage = () => {
         event.preventDefault();
         btnRef.current?.setLoadingOn();            
         try {
-            console.log(phone.current.getVal(), password.current.getVal());
-            console.log('response http inputs', { email: phone.current?.getVal(), password: password.current?.getVal() }  );
             const response = await login({ email: phone.current?.getVal(), password: password.current?.getVal() })
-            console.log('response http ****', response);
             if (response.status == 200) {
                 if (response.data.jwt) {
                     saveToken(response.data.jwt);
@@ -54,8 +50,6 @@ const LoginPage = () => {
                 if (e.response.data.jwt) {
                     saveToken(e.response.data.jwt);
                     saveUserId(e.response.data.user_id);
-                    console.log("JWT", e.response.data.jwt);
-                    console.log("UID", e.response.data.user_id);
                     navigate("/profiles");
                 }
             } else {

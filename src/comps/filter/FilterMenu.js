@@ -2,7 +2,6 @@ import { Popover, TextField, MenuItem, FormControl, InputLabel, Select, Button }
 import { useState } from 'react';
 
 export const FilterMenu = ({ anchorEl, open, onClose }) => {
-  console.log('rendering FilterMenu');
   const [nameSearch, setNameSearch] = useState('');
   const [ageFrom, setAgeFrom] = useState('');
   const [ageTo, setAgeTo] = useState('');

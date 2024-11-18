@@ -32,7 +32,6 @@ function ForgotPasswordDialog({ open, onClose }) {
       if (e.response.status == 422){  
       showNotification("danger","","No user found for "+ email,2000)
       }
-      console.log(e);
     }
     onClose();
   };

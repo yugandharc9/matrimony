@@ -68,19 +68,21 @@ export const uploadPics = (token, formData) =>  apiUpload(token).post('/api/v1/b
 
 export const getProfiles = (token, qp) => apiClient(token).get(`/api/v1/profiles${qp}`);
 
+export const getProfile = (token, profileID) => apiClient(token).get(`/api/v1/profiles/${profileID}`);
+
 export const getMyBioData = (token,) => apiClient(token).get(`/api/v1/biodata`);
 
-export const getBioDataOfProfile = (token, pid) => apiClient(token).get(`/api/v1/profiles/biodata?pid=${pid}`);
+export const getBioDataOfProfile = (token,userID) => apiClient(token).get(`/api/v1/profile/biodata?pid=${userID}`);
 
 export const getSavedProfiles = (token) => { apiClient(token).get(`/api/v1/bookmarks/`) };
 
 export const unsaveProfile = (token, profileId) => { apiClient(token).delete(`/api/v1/bookmarks/${profileId}`) };
 
-export const saveProfile = (token, userId) => { apiClient(token).post(`/api/v1/bookmarks`, { bookmark: { to: userId } }) };
+export const saveProfile = (token, profileID) => { apiClient(token).post(`/api/v1/bookmarks`, { bookmark: { to: profileID } }) };
 
-export const createChatRequest = (token, id) => { apiClient(token).post(`/api/v1/chatrequests/`, { chat_request: { to: id } }) };
+export const createChatRequest = (token, profileID) => { apiClient(token).post(`/api/v1/chatrequests`, { chat_request: { to: profileID } }) };
 
-export const cancelChatRequest = (token, id) => { apiClient(token).delete(`/api/v1/chatrequests/` + id + "/") }
+export const cancelChatRequest = (token, profileID) => { apiClient(token).delete(`/api/v1/chatrequests/` + profileID + "/") }
 
 export const listPendingRejectedChatRequest = (token) => { apiClient(token).get("/api/v1/chatrequests/?accepted=false&from=0"); }
 
