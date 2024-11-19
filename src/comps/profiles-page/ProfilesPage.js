@@ -18,10 +18,11 @@ const ProfilesPage = () => {
   const observerRef = useRef(null); // Ref for the observer
   const [hasMore,setHasMore] = useState(null);
   const [loading,setLoading] = useState(false);
+  const limit = 6;
 
 
  
-  const loadProfiles = async (limit,params) => { 
+  const loadProfiles = async (params) => { 
     if (loading || (hasMore != null && !hasMore)) {
       console.log('returning due to loading');
       return
@@ -33,9 +34,11 @@ const ProfilesPage = () => {
       setLoading(true);
       const response = await getProfiles(token,qParams);
       setProfiles([...profiles,...response.data.data]);
-      setOffset(offset+6);
       console.log('setHasMore(offset < response.data.total)',response.data.total);
       setHasMore(offset < response.data.total);
+      if (hasMore){   
+          incrementOffset(offset);
+      }
     } catch(e){   
       console.log('e is e',e);
     } finally{
@@ -57,8 +60,20 @@ const ProfilesPage = () => {
       Redirector(completionStat, navigate);
     }
   }
+  
+  
 
-  useEffect(() => {
+useEffect(() => {
+  loadProfiles({});
+  incrementOffset(offset);
+}
+,[]);
+
+
+
+  const incrementOffset = (prev) => { console.log('prev limit', prev,limit);;setOffset(prev+ limit); };
+
+   useEffect(() => {
     //checkCompletion();
     console.log('offset is',offset);
     const observer = new IntersectionObserver(
@@ -66,7 +81,7 @@ const ProfilesPage = () => {
         console.log('entries',entries);
         if (entries[0].isIntersecting ) {
           console.log("loading more");
-          loadProfiles( 6, {});
+          loadProfiles({});
         }
       },
       { threshold: 1.0 } // Fully visible element triggers
@@ -99,8 +114,9 @@ const ProfilesPage = () => {
   return (
     <div className="h-screen bg-custom-c1">
       <ApplicationBar />
-      <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-6">
+      <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
         {profiles.map((profile, index) => (
+          <>
           <ProfileCard
             key={index}
             name={profile.name}
@@ -121,6 +137,8 @@ const ProfilesPage = () => {
             profileID={profile.id}
             context="profiles"
           />
+              { index == profiles.length-1 &&(<div ref={observerRef} style={{ height: '20px', background: 'transparent' }}/>) }
+          </>
         ))}
         <button
           onClick={handleFilterButtonClick}
@@ -137,9 +155,6 @@ const ProfilesPage = () => {
         selectedFilters={selectedFilters}
         onFilterChange={handleFilterChange}
       />
-      <div ref={observerRef} style={{ height: '20px', background: 'transparent' }}>
-        {/* Empty div to act as the target for the IntersectionObserver */}
-      </div>
       <BottomBar2 />
     </div>
   );
