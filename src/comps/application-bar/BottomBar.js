@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 
 
-  const BottomNavbar2 = () => {
+  const BottomBar2 = ({active}) => {
   const [value, setValue] = useState(0);
   //const {token,userId} = useAuth();
     
@@ -40,11 +40,13 @@ import { Link } from 'react-router-dom';
         borderTop: '1px solid #ddd',
       }}
     >
-      <BottomNavigationAction
+
+      { 
+      active == "profiles" ?
+        <BottomNavigationAction
         label="Home"
         icon={<Home />}
         component={Link}
-        to="/home"
         sx={{
           backgroundColor: value === 0 ? '#CBAE8E' : 'transparent', // background color
           color: value === 0 ? '#492533' : '#CBAE8E', // icon color
@@ -52,8 +54,23 @@ import { Link } from 'react-router-dom';
             backgroundColor: '#CBAE8E',
             color: '#492533',
           },
-        }}
-      />
+        }}  /> :
+
+        <BottomNavigationAction
+        label="Profiles"
+        icon={<Home />}
+        to="/profiles"
+        component={Link}
+        sx={{
+          backgroundColor: value === 0 ? '#CBAE8E' : 'transparent', // background color
+          color: value === 0 ? '#492533' : '#CBAE8E', // icon color
+          '&.Mui-selected': {
+            backgroundColor:  '#492533',
+            color: '#CBAE8E',
+          },
+        }}  />  
+      }
+
       <BottomNavigationAction
         label="Search"
         icon={<Search />}
@@ -68,6 +85,7 @@ import { Link } from 'react-router-dom';
           },
         }}
       />
+
       <BottomNavigationAction
         label="Notifications"
         icon={<Notifications />}
@@ -114,4 +132,4 @@ import { Link } from 'react-router-dom';
   );
 };
 
-export default BottomNavbar2;
+export default BottomBar2;

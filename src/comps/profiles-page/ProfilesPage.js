@@ -9,6 +9,9 @@ import { useAuth } from '../auth/authctx';
 import { profileCompletionStatus } from '../../services/apiService';
 import { Redirector } from '../routing/redirector';
 import { useNavigate } from 'react-router-dom';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+
 
 const ProfilesPage = () => {
   const [profiles,setProfiles] = useState([]);
@@ -115,29 +118,42 @@ useEffect(() => {
     <div className="h-screen bg-custom-c1">
       <ApplicationBar />
       <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
+
+        {profiles.length == 0 &&
+          <>
+            <div className='flex flex-wrap justify-center gap-8'>
+              { Array.from({length: 30}).map((_,idx) => (<div>
+                <Skeleton variant="text" sx={{ fontSize: '1rem', backgroundColor: '#FEF5EC' }} />
+                <Skeleton variant="circular" width={40} height={40} sx={{ backgroundColor: '#FEF5EC' }} />
+                <Skeleton variant="rectangular" width={210} height={60} sx={{ backgroundColor: '#FEF5EC' }} />
+                <Skeleton variant="rounded" width={210} height={60} sx={{ backgroundColor: '#FEF5EC' }} />
+              </div>))}
+            </div>
+          </>}
+
         {profiles.map((profile, index) => (
           <>
-          <ProfileCard
-            key={index}
-            name={profile.name}
-            age={profile.age}
-            lastName={profile.lastName}
-            current_city={profile.current_city}
-            occupation={profile.occupation}
-            education={profile.education}
-            height_ft={profile.height_ft}
-            work={profile.work}
-            pic={profile.pics}
-            aboutme={profile.aboutme}
-            pics={profile.pics}
-            degree={profile.degree}
-            totalpoints={profile.points.total}
-            points={profile.points}
-            userID={profile.user_id}
-            profileID={profile.id}
-            context="profiles"
-          />
-              { index == profiles.length-1 &&(<div ref={observerRef} style={{ height: '20px', background: 'transparent' }}/>) }
+            <ProfileCard
+              key={index}
+              name={profile.name}
+              age={profile.age}
+              lastName={profile.lastName}
+              current_city={profile.current_city}
+              occupation={profile.occupation}
+              education={profile.education}
+              height_ft={profile.height_ft}
+              work={profile.work}
+              pic={profile.pics}
+              aboutme={profile.aboutme}
+              pics={profile.pics}
+              degree={profile.degree}
+              totalpoints={profile.points.total}
+              points={profile.points}
+              userID={profile.user_id}
+              profileID={profile.id}
+              context="profiles"
+            />
+            {index == profiles.length - 1 && (<div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />)}
           </>
         ))}
         <button
@@ -155,7 +171,7 @@ useEffect(() => {
         selectedFilters={selectedFilters}
         onFilterChange={handleFilterChange}
       />
-      <BottomBar2 />
+      <BottomBar2 active="profiles1" />
     </div>
   );
 };
