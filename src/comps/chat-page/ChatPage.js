@@ -1,73 +1,207 @@
-import React, { useState } from 'react';
-import { TextField, Button, Paper, Typography, Avatar, List, ListItem, ListItemText, Divider, IconButton } from '@mui/material';
-import { Send } from '@mui/icons-material';
+import React, { useEffect, useState, useRef } from 'react';
+import ApplicationBar from '../application-bar/ApplicationBar';
+import BottomBar2 from '../application-bar/BottomBar';
+import { useAuth } from '../auth/authctx';
+import { getChatThreadForUser, listPendingChatRequest,getInvites } from '../../services/apiService';
+import ChatThread from './ChatThread';
+import ProfileCard from '../profile-card/profileCard';
 
-// Dummy chat data
-const dummyMessages = [
-  { id: 1, sender: 'John', text: 'Hi, how are you?', timestamp: '10:30 AM' },
-  { id: 2, sender: 'You', text: 'I\'m good, thanks! How about you?', timestamp: '10:32 AM' },
-  { id: 3, sender: 'John', text: 'I\'m doing great! Just working on a project.', timestamp: '10:34 AM' },
-  { id: 4, sender: 'You', text: 'That\'s awesome! What kind of project?', timestamp: '10:35 AM' },
-];
 
 const ChatPage = () => {
-  const [messages, setMessages] = useState(dummyMessages);
-  const [newMessage, setNewMessage] = useState('');
+  const [threads, setThreads] = useState([]);
+  const [invites, setInvites] = useState([]);
+  const [sent, setSent] = useState([]);
+  const [current, setCurrent] = useState("chats")
+  const { token } = useAuth();
+  const [hasMore, setHasMore] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const observerRef = useRef(null); // Ref for the observer
+  const [offset, setOffset] = useState(0);
+  const limit = 10;
 
-  const handleSend = () => {
-    if (newMessage.trim()) {
-      const newMessageObj = {
-        id: messages.length + 1,
-        sender: 'You',
-        text: newMessage,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      setMessages([...messages, newMessageObj]);
-      setNewMessage('');
-    }
+  const handleCurrent = (current) => {
+    setCurrent(current);
   };
 
+
+  const loadChatThreads = async () => {
+    console.log('loadignChatTHrada');
+    if (loading || (hasMore != null && !hasMore)) {
+      console.log('returning due to loading');
+      return
+    }
+    try {
+      setLoading(true);
+      const response = await getChatThreadForUser(token, limit, offset);
+      console.log('response ', response);
+      setThreads([...threads, ...response.data.data]);
+      setHasMore(offset < response.data.total);
+      if (hasMore) {
+        incrementOffset(offset);
+      }
+    } catch (e) {
+      console.log('e is e', e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const loadInvites = async () => {
+    if (loading) {
+      console.log('returning due to loading');
+      return
+    }
+    try {
+      setLoading(true);
+      const response = await getInvites(token);
+      console.log('response ', response);
+      setInvites([...invites, ...response.data.data]);
+    } catch (e) {
+      console.log('e is e', e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const loadSent = async () => {
+    if (loading) {
+      console.log('returning due to loading');
+      return
+    }
+    try {
+      setLoading(true);
+      const response = await listPendingChatRequest(token);
+      console.log('response ', response);
+      setSent([...sent, ...response.data.data]);
+    } catch (e) {
+      console.log('e is e', e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  const incrementOffset = (prev) => { console.log('prev limit', prev, limit);; setOffset(prev + limit); };
+
+  useEffect(() => {
+    if (current == "chats") {
+      loadChatThreads();
+      incrementOffset(offset);
+    } else if (current == "requests") {
+      loadInvites();
+    } else if (current == "sent") {
+      loadSent();
+    }
+  }, [current])
+
+  useEffect(() => {
+    //checkCompletion();
+    console.log('offset is', offset);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log('entries', entries);
+        if (entries[0].isIntersecting) {
+          console.log("loading more");
+          loadChatThreads();
+        }
+      },
+      { threshold: 1.0 } // Fully visible element triggers
+    );
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current); // Cleanup
+    };
+
+  }, [offset, hasMore, loading]);
+
   return (
-    <div className="flex flex-col h-screen bg-[#FEF5EC] p-4">
-      <Paper className="flex-1 p-4" elevation={3} style={{ backgroundColor: '#492533' }}>
-        <div className="flex items-center mb-4">
-          <Avatar sx={{ bgcolor: '#F5D0A6' }}>J</Avatar>
-          <Typography variant="h6" className="ml-4 text-[#F5D0A6]">John Doe</Typography>
-        </div>
-
-        <List sx={{ maxHeight: '400px', overflowY: 'auto' }}>
-          {messages.map((message) => (
-            <div key={message.id}>
-              <ListItem>
-                <Avatar sx={{ bgcolor: '#CBAE8E' }} className="mr-2">{message.sender[0]}</Avatar>
-                <ListItemText
-                  primary={message.text}
-                  secondary={`${message.sender} - ${message.timestamp}`}
-                  primaryTypographyProps={{ className: "text-[#FEF5EC]" }}
-                  secondaryTypographyProps={{ className: "text-[#CBAE8E]" }}
-                />
-              </ListItem>
-              <Divider sx={{ backgroundColor: '#CBAE8E' }} />
-            </div>
-          ))}
-        </List>
-      </Paper>
-
-      <div className="flex items-center mt-4">
-        <TextField
-          variant="outlined"
-          fullWidth
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message"
-          InputProps={{
-            style: { backgroundColor: '#CBAE8E', borderRadius: '25px' },
-          }}
-        />
-        <IconButton color="primary" onClick={handleSend}>
-          <Send />
-        </IconButton>
+    <div className="h-screen overflow-auto">
+      <ApplicationBar />
+      <div className="flex space-x-0">
+        {current == "chats" ? (<>
+          <div className="flex-1 bg-custom-c2 text-custom-c1 p-4 border-custom-c2 shadow-custom-c2 shadow-lg" >Chats</div>
+        </>) : (<>
+          <div className="flex-1 bg-custom-c1 text-custom-c2 border-2 p-4 border-custom-c2 shadow-custom-c2 shadow-lg" onClick={() => { handleCurrent("chats") }}>Chats</div>
+        </>)}
+        {current == "requests" ? (<>
+          <div className="flex-1 bg-custom-c2 text-custom-c1 p-4 border-custom-c2 shadow-custom-c2 shadow-lg"  >Requests</div>
+        </>) : (<>
+          <div className="flex-1 bg-custom-c1 text-custom-c2 border-2 p-4 border-custom-c2 shadow-custom-c2 shadow-lg " onClick={() => { handleCurrent("requests") }}>Requests</div>
+        </>)}
+        {current == "sent" ? (<>
+          <div className="flex-1 bg-custom-c2 text-custom-c1 p-4 border-custom-c2 shadow-custom-c2 shadow-lg"  >Sent</div>
+        </>) : (<>
+          <div className="flex-1 bg-custom-c1 text-custom-c2 border-2 border-custom-c2 shadow-custom-c2 shadow-lg p-4" onClick={() => { handleCurrent("sent") }}>Sent</div>
+        </>)}
       </div>
+      <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
+
+     { current == "chats" &&
+      <div className="fix flex-col justify-center items-center gap-x-8">
+       { current=="chats" && <> {threads.map((thread, index) => (
+          <>
+            <ChatThread thread={thread} />
+            {index == threads.length - 1 && (<div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />)}
+          </>
+        ))} </>
+      }
+    </div>
+     }
+
+       { current=="requests" && <> {invites.map((profile, index) => (
+          <> 
+            <ProfileCard
+              key={index}
+              name={profile.name}
+              age={profile.age}
+              lastName={profile.lastName}
+              current_city={profile.current_city}
+              occupation={profile.occupation}
+              education={profile.education}
+              height_ft={profile.height_ft}
+              work={profile.work}
+              pic={profile.pics}
+              aboutme={profile.aboutme}
+              pics={profile.pics}
+              degree={profile.degree}
+              totalpoints={null}
+              points={profile.points}
+              userID={profile.user_id}
+              profileID={profile.id}
+              context="chatRequests"
+            />
+          </>
+        ))} </>
+      }
+     
+       { current=="sent" && <> {sent.map((profile, index) => (
+          <> 
+            <ProfileCard
+              key={index}
+              name={profile.name}
+              age={profile.age}
+              lastName={profile.lastName}
+              current_city={profile.current_city}
+              occupation={profile.occupation}
+              education={profile.education}
+              height_ft={profile.height_ft}
+              work={profile.work}
+              pic={profile.pics}
+              aboutme={profile.aboutme}
+              pics={profile.pics}
+              degree={profile.degree}
+              totalpoints={null}
+              points={profile.points}
+              userID={profile.user_id}
+              profileID={profile.id}
+              context="interets"
+            />
+          </>
+        ))} </>
+      }
+      </div>
+      <BottomBar2 active="chats" />
     </div>
   );
 };

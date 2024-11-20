@@ -10,7 +10,6 @@ import { profileCompletionStatus } from '../../services/apiService';
 import { Redirector } from '../routing/redirector';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
 
 
 const ProfilesPage = () => {
@@ -171,7 +170,7 @@ useEffect(() => {
         selectedFilters={selectedFilters}
         onFilterChange={handleFilterChange}
       />
-      <BottomBar2 active="profiles1" />
+      <BottomBar2 active="profiles" />
     </div>
   );
 };

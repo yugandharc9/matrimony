@@ -9,10 +9,10 @@ import { Link } from 'react-router-dom';
 
 
 
-  const BottomBar2 = ({active}) => {
+const BottomBar2 = ({ active }) => {
   const [value, setValue] = useState(0);
   //const {token,userId} = useAuth();
-    
+
   // const countReducer = (state, {event, payload}) => {
   //   switch (event) {
   //     case "publish":
@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom';
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-    
+
 
   return (
     <BottomNavigation
@@ -41,93 +41,98 @@ import { Link } from 'react-router-dom';
       }}
     >
 
-      { 
-      active == "profiles" ?
-        <BottomNavigationAction
-        label="Home"
-        icon={<Home />}
-        component={Link}
-        sx={{
-          backgroundColor: value === 0 ? '#CBAE8E' : 'transparent', // background color
-          color: value === 0 ? '#492533' : '#CBAE8E', // icon color
-          '&.Mui-selected': {
-            backgroundColor: '#CBAE8E',
-            color: '#492533',
-          },
-        }}  /> :
+      {
+        active == "profiles" ?
+          <BottomNavigationAction
+            label="Profiles"
+            icon={<Home />}
+            component={Link}
+            sx={{
+                backgroundColor:  '#492533',
+                color: '#CBAE8E',
+              '&.Mui-selected': {
+                backgroundColor: '#CBAE8E',
+                color: '#492533',
+              },
+            }} /> :
 
-        <BottomNavigationAction
-        label="Profiles"
-        icon={<Home />}
-        to="/profiles"
-        component={Link}
-        sx={{
-          backgroundColor: value === 0 ? '#CBAE8E' : 'transparent', // background color
-          color: value === 0 ? '#492533' : '#CBAE8E', // icon color
-          '&.Mui-selected': {
-            backgroundColor:  '#492533',
-            color: '#CBAE8E',
-          },
-        }}  />  
+          <BottomNavigationAction
+            label="Profiles"
+            icon={<Home />}
+            to="/profiles"
+            component={Link}
+            sx={{
+              backgroundColor: '#CBAE8E' , // background color
+              color: '#492533' , // icon color
+              '&.Mui-selected': {
+                backgroundColor: '#492533',
+                color: '#CBAE8E',
+              },
+            }} />
       }
 
+      { 
+      active == "saved" ? 
       <BottomNavigationAction
         label="Search"
         icon={<Search />}
         component={Link}
         to="/search"
         sx={{
-          backgroundColor: value === 1 ? '#CBAE8E' : 'transparent',
-          color: value === 1 ? '#492533' : '#CBAE8E',
+          backgroundColor: '#CBAE8E' ,
+          color: '#492533',
           '&.Mui-selected': {
-            backgroundColor: '#CBAE8E',
-            color: '#492533',
+            color: '#CBAE8E',
+            backgroundColor: '#492533',
           },
-        }}
-      />
-
+        }} /> 
+        : 
       <BottomNavigationAction
-        label="Notifications"
-        icon={<Notifications />}
+        label="Search"
+        icon={<Search />}
         component={Link}
-        to="/notifications"
+        to="/search"
         sx={{
-          backgroundColor: value === 2 ? '#CBAE8E' : 'transparent',
-          color: value === 2 ? '#492533' : '#CBAE8E',
+          color: '#CBAE8E' ,
+          backgroundColor: '#492533',
           '&.Mui-selected': {
             backgroundColor: '#CBAE8E',
             color: '#492533',
           },
-        }}
-      />
+        }} />  
+      }
+
+      { 
+      active == "chats" ? 
       <BottomNavigationAction
-        label="Messages"
+        label="Chats"
         icon={<Message />}
         component={Link}
-        to="/messages"
+        to="/chats"
         sx={{
-          backgroundColor: value === 3 ? '#CBAE8E' : 'transparent',
-          color: value === 3 ? '#492533' : '#CBAE8E',
+          backgroundColor: '#CBAE8E' ,
+          color: '#492533',
           '&.Mui-selected': {
-            backgroundColor: '#CBAE8E',
-            color: '#492533',
+            color: '#CBAE8E',
+            backgroundColor: '#492533',
           },
-        }}
-      />
+        }} /> 
+        : 
       <BottomNavigationAction
-        label="Profile"
-        icon={<AccountCircle />}
+        label="Chats"
+        icon={<Message />}
         component={Link}
-        to="/profile"
+        to="/chats"
         sx={{
-          backgroundColor: value === 4 ? '#CBAE8E' : 'transparent',
-          color: value === 4 ? '#492533' : '#CBAE8E',
+          color: '#CBAE8E' ,
+          backgroundColor: '#492533',
           '&.Mui-selected': {
             backgroundColor: '#CBAE8E',
             color: '#492533',
           },
-        }}
-      />
+        }} />  
+      }
+
     </BottomNavigation>
   );
 };

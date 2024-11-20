@@ -23,7 +23,7 @@ const AppRouter = () => {
       <Route path="/info" element={<AddProfileInfoPage operation="create" />} />
       <Route path="/update/info" element={<AddProfileInfoPage operation="update" />} />
       <Route path="/profiles" element={<ProfilesPage />} />
-      <Route path="/chat" element={<ChatPage />} />
+      <Route path="/chats" element={<ChatPage />} />
       <Route path="/featured" element={<FeaturedAdvertisingPage />} />
       <Route path="/my-chats" element={<MyChatsPage />} />
       <Route path="/received-requests" element={<ReceivedChatRequestsPage />} />

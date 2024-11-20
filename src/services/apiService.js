@@ -84,7 +84,7 @@ export const createChatRequest = (token, profileID) => { apiClient(token).post(`
 
 export const cancelChatRequest = (token, profileID) => { apiClient(token).delete(`/api/v1/chatrequests/` + profileID + "/") }
 
-export const listPendingRejectedChatRequest = (token) => { apiClient(token).get("/api/v1/chatrequests/?accepted=false&from=0"); }
+export const listPendingChatRequest = (token) =>  apiClient(token).get("/api/v1/chatrequests/?accepted=false&from=0"); 
 
 export const acceptChatRequest = (token, profileId) => { apiClient(token).post("/api/v1/chatrequests/", { id: profileId, chat_request: { accepted: true, declined: false } }); }
 
@@ -102,7 +102,7 @@ export const getInvites = (token,) => apiClient(token).get('/api/v1/invites');
 
 export const sendMessageToUser = (token, to, payload) => { apiClient(token).post("/api/v1/message/", { message: { to: to, message: payload } }) };
 
-export const getChatThreadForUser = (token,) => { apiClient(token).get("/api/v1/message/") };
+export const getChatThreadForUser = (token,limit,offset) =>  apiClient(token).get(`/api/v1/chat/threads?limit=${limit}&offset=${offset}`) ;
 
 export const getChatForProfile = (token, profileId, offset) => { apiClient(token).get(`/api/v1/message/${profileId}/*/${offset}`) };
 

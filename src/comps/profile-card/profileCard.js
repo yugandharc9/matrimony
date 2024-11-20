@@ -18,6 +18,7 @@ import { createChatRequest, declineChatRequest, getBioDataOfProfile, saveProfile
 import { useAuth } from '../auth/authctx';
 import {  useNavigate } from 'react-router-dom';
 
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import axios from 'axios';
 
 const ProfileCard = ({ name, lastName, age, current_city, occupation, degree, height_ft, userID, profileID, aboutme, pics, work, totalpoints, points, context }) => {
@@ -329,7 +330,7 @@ const ProfileCard = ({ name, lastName, age, current_city, occupation, degree, he
             alt="Chat"
             onClick={openChatRequestDialog} />
             <ConfirmDialog ref={chatReqRef} profileID={profileID} userID={userID} onConfirm={handleChatReqConfirm} message={`Do you want to send chat request to ${name}? You can chat after ${name} accepts.`} />
-            <StarBorderIcon sx={{
+            <BookmarkBorderIcon sx={{
               color: "",
               fontSize: "50px",
             }} onClick={openSaveProfileDialog} />
