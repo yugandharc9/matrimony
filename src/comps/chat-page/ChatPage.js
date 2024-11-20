@@ -5,6 +5,7 @@ import { useAuth } from '../auth/authctx';
 import { getChatThreadForUser, listPendingChatRequest,getInvites } from '../../services/apiService';
 import ChatThread from './ChatThread';
 import ProfileCard from '../profile-card/profileCard';
+import Skeleton from '@mui/material/Skeleton';
 
 
 const ChatPage = () => {
@@ -135,22 +136,72 @@ const ChatPage = () => {
           <div className="flex-1 bg-custom-c1 text-custom-c2 border-2 border-custom-c2 shadow-custom-c2 shadow-lg p-4" onClick={() => { handleCurrent("sent") }}>Sent</div>
         </>)}
       </div>
-      <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
 
-     { current == "chats" &&
-      <div className="fix flex-col justify-center items-center gap-x-8">
-       { current=="chats" && <> {threads.map((thread, index) => (
-          <>
-            <ChatThread thread={thread} />
-            {index == threads.length - 1 && (<div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />)}
-          </>
-        ))} </>
+      {current == "chats" &&
+        <>
+
+          <div className="h-4 bg-custom-c1"></div>
+          <div className="flex flex-col gap-1 items-center bg-custom-c1">
+             { loading && (
+              <>
+              {Array.from({ length: 20 }).map((_, idx) => (
+              <div
+                key={idx}
+                className="flex h-auto w-1/2 border-b border-custom-c2 bg-custom-c1 py-4"
+              >
+                {/* Profile Picture Skeleton */}
+                <div className="w-1/4 flex justify-center items-center">
+                  <Skeleton
+                    variant="circular"
+                    width={64}
+                    height={64}
+                    sx={{ backgroundColor: '#FEF5EC' }}
+                  />
+                </div>
+
+                {/* Thread Details Skeleton */}
+                <div className="flex flex-col w-3/4 px-4 space-y-2">
+                  {/* Name and Badge Skeleton */}
+                  <div className="flex items-center justify-between">
+                    <Skeleton
+                      variant="text"
+                      width="60%"
+                      height={24}
+                      sx={{ backgroundColor: '#FEF5EC' }}
+                    />
+                    <Skeleton
+                      variant="rounded"
+                      width={40}
+                      height={20}
+                      sx={{ backgroundColor: '#FEF5EC' }}
+                    />
+                  </div>
+
+                  {/* Message Preview Skeleton */}
+                  <Skeleton
+                    variant="text"
+                    width="80%"
+                    height={16}
+                    sx={{ backgroundColor: '#FEF5EC' }}
+                  />
+                </div>
+              </div>
+            ))} </>) }
+
+            {(current == "chats" && !loading) && <> {threads.map((thread, index) => (
+              <>
+                <ChatThread thread={thread} />
+                {index == threads.length - 1 && (<div ref={observerRef} style={{ height: '20px', background: 'transparent' }} />)}
+              </>
+            ))} </>
+            }
+          </div>
+        </>
       }
-    </div>
-     }
 
-       { current=="requests" && <> {invites.map((profile, index) => (
-          <> 
+      <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
+        {current == "requests" && <> {invites.map((profile, index) => (
+          <>
             <ProfileCard
               key={index}
               name={profile.name}
@@ -173,10 +224,10 @@ const ChatPage = () => {
             />
           </>
         ))} </>
-      }
-     
-       { current=="sent" && <> {sent.map((profile, index) => (
-          <> 
+        }
+
+        {current == "sent" && <> {sent.map((profile, index) => (
+          <>
             <ProfileCard
               key={index}
               name={profile.name}
@@ -199,7 +250,7 @@ const ChatPage = () => {
             />
           </>
         ))} </>
-      }
+        }
       </div>
       <BottomBar2 active="chats" />
     </div>

@@ -13,6 +13,7 @@ import UploadDocPage from "../add-photos/AddDocs";
 import UploadPicsPage from "../add-photos/AddPhotos";
 import {FilterMenu} from "../filter/FilterMenu";
 import {ShowProfilePage} from '../show-profile/ShowProfilePage';
+import { UserChat } from "../chat-page/UserChat";
 
 const AppRouter = () => {
    return ( <div>
@@ -31,6 +32,7 @@ const AppRouter = () => {
       <Route path="/subscription" element={<SubscriptionsPage />} /> 
       <Route path="/upload/doc" element={<UploadDocPage />} /> 
       <Route path="/upload/pics" element={<UploadPicsPage />} /> 
+      <Route path="/chat" element={<UserChat/>} /> 
       <Route path="/profile/:pid" element={<ShowProfilePage />} />
     </Routes>
   </div>)

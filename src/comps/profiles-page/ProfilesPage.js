@@ -118,17 +118,22 @@ useEffect(() => {
       <ApplicationBar />
       <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
 
-        {profiles.length == 0 &&
+        {
+        profiles.length == 0 &&
           <>
             <div className='flex flex-wrap justify-center gap-8'>
-              { Array.from({length: 30}).map((_,idx) => (<div>
+              { 
+              Array.from({length: 30}).map((_,idx) => (<div>
                 <Skeleton variant="text" sx={{ fontSize: '1rem', backgroundColor: '#FEF5EC' }} />
                 <Skeleton variant="circular" width={40} height={40} sx={{ backgroundColor: '#FEF5EC' }} />
                 <Skeleton variant="rectangular" width={210} height={60} sx={{ backgroundColor: '#FEF5EC' }} />
                 <Skeleton variant="rounded" width={210} height={60} sx={{ backgroundColor: '#FEF5EC' }} />
-              </div>))}
+              </div>)
+            
+            )}
             </div>
-          </>}
+          </>
+          }
 
         {profiles.map((profile, index) => (
           <>

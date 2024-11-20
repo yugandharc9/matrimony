@@ -1,19 +1,58 @@
 import React from "react";
+import MailIcon from '@mui/icons-material/Mail';
+import Badge from '@mui/material/Badge';
+import { useNavigate } from "react-router-dom";
 
-
-
-const goToChat = (profileId)  => {
-  console.log('goint to chat',profileId);
-};
 
 // ChatThread Component
 const ChatThread = ({ thread }) => {
+  const navigate = useNavigate();
+
+
+  const goToChat = (thread) => {
+    navigate("/chat", { state: thread });
+  };
+
   return (
-        <div className="flex flex-row">
-    <div class="p-4 bg-blue-500">{thread.name}</div>
-  <div class="p-4 bg-green-500">{thread.lastName}</div>
-  <div class="p-4 bg-red-500">{thread.unread_count}</div>
-        </div>      
+    <>
+      <div className="flex h-auto w-1/2 border-r-12 border-custom-c2 bg-custom-c1">
+        {/* Profile Picture Section */}
+        <div className="w-1/4 flex justify-center items-center">
+          <img
+            className="rounded-full w-16 h-16 object-cover"
+            src={thread.profile_pic}
+            alt={`${thread.name} ${thread.last_name}`}
+          />
+        </div>
+
+        {/* Thread Details Section */}
+        <div className="flex flex-col w-3/4 px-4" onClick={() => { goToChat(thread) }} >
+          {/* Header Section */}
+          <div className="flex items-center justify-between">
+            <div className="text-3xl text-custom-c4">
+              {thread.name} {thread.last_name}
+            </div>
+            <Badge
+              badgeContent={thread.unread_count}
+              sx={{
+                '& .MuiBadge-badge': {},
+              }}
+              color="primary"
+            />
+          </div>
+
+          {/* Message Preview Section */}
+          <div className="mt-2 text-sm text-custom-c4 overflow-hidden text-ellipsis whitespace-nowrap flex items-center gap-2">
+            <MailIcon />
+            <span>{thread.last_message}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <hr className="w-1/2 border-custom-c2" />
+    </>
+
   );
 };
 
