@@ -2,18 +2,17 @@ import React, { useEffect, useState, useRef } from 'react';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import BottomBar2 from '../application-bar/BottomBar';
 import { useAuth } from '../auth/authctx';
-import { getChatThreadForUser, listPendingChatRequest,getInvites } from '../../services/apiService';
+import { getChatThreadForUser, listPendingChatRequest, getInvites } from '../../services/apiService';
 import ChatThread from './ChatThread';
 import ProfileCard from '../profile-card/profileCard';
 import Skeleton from '@mui/material/Skeleton';
-
 
 const ChatPage = () => {
   const [threads, setThreads] = useState([]);
   const [invites, setInvites] = useState([]);
   const [sent, setSent] = useState([]);
   const [current, setCurrent] = useState("chats")
-  const { token } = useAuth();
+  const { token, userId } = useAuth();
   const [hasMore, setHasMore] = useState(null);
   const [loading, setLoading] = useState(false);
   const observerRef = useRef(null); // Ref for the observer
@@ -23,7 +22,7 @@ const ChatPage = () => {
   const handleCurrent = (current) => {
     setCurrent(current);
   };
-
+  
 
   const loadChatThreads = async () => {
     console.log('loadignChatTHrada');
@@ -142,51 +141,51 @@ const ChatPage = () => {
 
           <div className="h-4 bg-custom-c1"></div>
           <div className="flex flex-col gap-1 items-center bg-custom-c1">
-             { loading && (
+            {loading && (
               <>
-              {Array.from({ length: 20 }).map((_, idx) => (
-              <div
-                key={idx}
-                className="flex h-auto w-1/2 border-b border-custom-c2 bg-custom-c1 py-4"
-              >
-                {/* Profile Picture Skeleton */}
-                <div className="w-1/4 flex justify-center items-center">
-                  <Skeleton
-                    variant="circular"
-                    width={64}
-                    height={64}
-                    sx={{ backgroundColor: '#FEF5EC' }}
-                  />
-                </div>
+                {Array.from({ length: 20 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex h-auto w-1/2 border-b border-custom-c2 bg-custom-c1 py-4"
+                  >
+                    {/* Profile Picture Skeleton */}
+                    <div className="w-1/4 flex justify-center items-center">
+                      <Skeleton
+                        variant="circular"
+                        width={64}
+                        height={64}
+                        sx={{ backgroundColor: '#FEF5EC' }}
+                      />
+                    </div>
 
-                {/* Thread Details Skeleton */}
-                <div className="flex flex-col w-3/4 px-4 space-y-2">
-                  {/* Name and Badge Skeleton */}
-                  <div className="flex items-center justify-between">
-                    <Skeleton
-                      variant="text"
-                      width="60%"
-                      height={24}
-                      sx={{ backgroundColor: '#FEF5EC' }}
-                    />
-                    <Skeleton
-                      variant="rounded"
-                      width={40}
-                      height={20}
-                      sx={{ backgroundColor: '#FEF5EC' }}
-                    />
+                    {/* Thread Details Skeleton */}
+                    <div className="flex flex-col w-3/4 px-4 space-y-2">
+                      {/* Name and Badge Skeleton */}
+                      <div className="flex items-center justify-between">
+                        <Skeleton
+                          variant="text"
+                          width="60%"
+                          height={24}
+                          sx={{ backgroundColor: '#FEF5EC' }}
+                        />
+                        <Skeleton
+                          variant="rounded"
+                          width={40}
+                          height={20}
+                          sx={{ backgroundColor: '#FEF5EC' }}
+                        />
+                      </div>
+
+                      {/* Message Preview Skeleton */}
+                      <Skeleton
+                        variant="text"
+                        width="80%"
+                        height={16}
+                        sx={{ backgroundColor: '#FEF5EC' }}
+                      />
+                    </div>
                   </div>
-
-                  {/* Message Preview Skeleton */}
-                  <Skeleton
-                    variant="text"
-                    width="80%"
-                    height={16}
-                    sx={{ backgroundColor: '#FEF5EC' }}
-                  />
-                </div>
-              </div>
-            ))} </>) }
+                ))} </>)}
 
             {(current == "chats" && !loading) && <> {threads.map((thread, index) => (
               <>

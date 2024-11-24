@@ -66,6 +66,7 @@ const ProfilesPage = () => {
   
 
 useEffect(() => {
+  checkCompletion();
   loadProfiles({});
   incrementOffset(offset);
 }

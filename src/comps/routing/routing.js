@@ -14,12 +14,14 @@ import UploadPicsPage from "../add-photos/AddPhotos";
 import {FilterMenu} from "../filter/FilterMenu";
 import {ShowProfilePage} from '../show-profile/ShowProfilePage';
 import { UserChat } from "../chat-page/UserChat";
+import { LogoutPage } from "../logout-page/LogoutPage";
 
 const AppRouter = () => {
    return ( <div>
     <Routes>
       <Route path="/" element={<FilterMenu open={true} />} /> 
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/logout" element={<LogoutPage />} />
       <Route path="/signup" element={<RegisterPage />} />
       <Route path="/info" element={<AddProfileInfoPage operation="create" />} />
       <Route path="/update/info" element={<AddProfileInfoPage operation="update" />} />

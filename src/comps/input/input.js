@@ -198,6 +198,16 @@ const SelectInput = forwardRef(({ placeholder, labelName, isRequired, selectVals
         '& .MuiInputLabel-root.Mui-focused': {
           color: '#FEF5EC', // Focused label color
         },
+          // new
+          '& .MuiMenuItem-root.Mui-selected': {
+            backgroundColor: 'transparent', // No gray background
+            '&:hover': {
+              backgroundColor: '#f5f5f5', // Custom hover color
+            },
+          },
+          '& .MuiMenuItem-root:focus': {
+            backgroundColor: 'transparent', // No gray background on focus
+          },
       }}>
       {selectVals && selectVals.map((option) => (
         <MenuItem key={option.value} value={option.value}

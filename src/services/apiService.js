@@ -100,11 +100,11 @@ export const myPics = (token,) => apiClient(token).get('/api/v1/pics');
 
 export const getInvites = (token,) => apiClient(token).get('/api/v1/invites');
 
-export const sendMessageToUser = (token, to, payload) => { apiClient(token).post("/api/v1/message/", { message: { to: to, message: payload } }) };
+export const sendMessageToUser = (token, to, payload) =>  apiClient(token).post("/api/v1/message/", { message: { to: to, message: payload } }) ;
 
 export const getChatThreadForUser = (token,limit,offset) =>  apiClient(token).get(`/api/v1/chat/threads?limit=${limit}&offset=${offset}`) ;
 
-export const getChatForProfile = (token, profileId, offset) => { apiClient(token).get(`/api/v1/message/${profileId}/*/${offset}`) };
+export const getChatForProfile = (token, profileId, offset) =>  apiClient(token).get(`/api/v1/message/${profileId}*${offset}`) ;
 
 export const triggerFirstCountOnLoad = (token,) => { apiClient(token).get(`/api/v1/counts/subscribe`) };
 

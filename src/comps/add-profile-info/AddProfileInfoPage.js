@@ -3,14 +3,14 @@ import { Input, SelectInput, InputArea } from "../input/input";
 import { educationList, rashis, devnagriInitials, genders, heights, maritialStats, yesNo, yesNoDontKnow } from "../../constants/constants";
 import { FormButton } from '../button/button';
 import { BaseLayout,BaseForm } from '../layout/BaseLayout'
-import { createProfile } from "../../services/apiService";
-import showNotification from '../notify/notify';
-import { useNavigate } from 'react-router-dom';
+import { createProfile } from "../../services/apiService"; import showNotification from '../notify/notify'; import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 
 
 const AddProfileInfoPage = () => {
-    useEffect(() =>{navigate("/profiles")},[]); 
+    useEffect(() =>{
+        //navigate("/profiles");
+    },[]); 
     const navigate = useNavigate();
     const name = useRef();
     const lastName = useRef();
@@ -83,7 +83,11 @@ const AddProfileInfoPage = () => {
                 showNotification("danger", "", response.data.error, 2000);
             }
         } catch (e) {
-            showNotification("danger", "", e.response.data.error, 2000);
+            if (e.response.status == 422){
+                navigate("/profiles");
+            } {
+            showNotification("danger", "", "Something went wrong", 2000);
+            }
         } finally {
             btnRef.current?.setLoadingOff();
         }

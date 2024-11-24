@@ -14,6 +14,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const removeLocalStorageItem = (key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch(e) {
+      console.log("logging error catching the removal of token", e)
+      return null;
+    }
+  };
+
   const [token, setToken] = useState(() => getLocalStorageItem('token'));
   const [userId, setUserId] = useState(() => getLocalStorageItem('userId'));
 
@@ -29,7 +38,9 @@ export const AuthProvider = ({ children }) => {
 
   const removeToken = () => {
     setToken(null);
-    localStorage.removeItem('token');
+    console.log('Before removal:', localStorage.getItem('token'));
+    removeLocalStorageItem('token');
+    console.log('After removal:', localStorage.getItem('token'));
   };
 
   return (
