@@ -1,16 +1,16 @@
 import { useEffect, useRef } from "react";
 import { Input, SelectInput, InputArea } from "../input/input";
-import { educationList, rashis, devnagriInitials, genders, heights, maritialStats, yesNo, yesNoDontKnow } from "../../constants/constants";
+import { educationList, rashis, devnagriInitials, genders, heights, maritialStats, yesNo,NoYes, yesNoDontKnow } from "../../constants/constants";
 import { FormButton } from '../button/button';
-import { BaseLayout,BaseForm } from '../layout/BaseLayout'
+import { BaseLayout, BaseForm } from '../layout/BaseLayout'
 import { createProfile } from "../../services/apiService"; import showNotification from '../notify/notify'; import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
-
+import {TDatePicker,TTimePicker} from '../input/DtPicker';
 
 const AddProfileInfoPage = () => {
-    useEffect(() =>{
+    useEffect(() => {
         //navigate("/profiles");
-    },[]); 
+    }, []);
     const navigate = useNavigate();
     const name = useRef();
     const lastName = useRef();
@@ -37,13 +37,13 @@ const AddProfileInfoPage = () => {
     const relation = useRef();
     const aboutme = useRef();
     const expectation = useRef();
-    const { token,saveToken } = useAuth();
+    const { token, saveToken } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         btnRef.current?.setLoadingOn();
         try {
-            const response = await createProfile(token,{
+            const response = await createProfile(token, {
                 profile: {
                     height: height.current?.getVal(),
                     name: name.current?.getVal(),
@@ -77,16 +77,17 @@ const AddProfileInfoPage = () => {
                 if (response.data.jwt) {
                     saveToken(response.data.jwt);
                 }
-                navigate("/profiles");
+                navigate("/login");
                 showNotification("success", "", "Profile saved", 2000);
             } else {
                 showNotification("danger", "", response.data.error, 2000);
             }
         } catch (e) {
-            if (e.response.status == 422){
-                navigate("/profiles");
+            console.log('e is ',e);
+            if (e.response.status == 422) {
+                navigate("/login");
             } {
-            showNotification("danger", "", "Something went wrong", 2000);
+                showNotification("danger", "", "Something went wrong", 2000);
             }
         } finally {
             btnRef.current?.setLoadingOff();
@@ -113,7 +114,7 @@ const AddProfileInfoPage = () => {
                     </div>
                     <div className="grid grid-cols-2 gap-5 w-2/3 ">
                         <SelectInput defaultValue="" selectVals={maritialStats} placeholder="Status" ref={maritial_status} isRequired={true} labelName="Status" />
-                        <SelectInput defaultValue="" selectVals={yesNo} placeholder="Physically Challenged" ref={challenged} isRequired={true} labelName="Physically challenged" />
+                        <SelectInput defaultValue="" selectVals={NoYes} placeholder="Physically Challenged" ref={challenged} isRequired={true} labelName="Physically challenged" />
                     </div>
                     < Input placeholder="Current city" ref={current_city} isRequired={true} type="text" labelName="Current city" />
                     <div className="grid grid-cols-2 gap-5 w-2/3 ">
@@ -146,8 +147,8 @@ const AddProfileInfoPage = () => {
                     <h1 className="mr-auto ml-auto text-left text-xl text-custom-c2">Astrological Info</h1>
                     <hr className="w-4/5 h-2 border-custom-c2" />
                     <div className="grid grid-cols-2 gap-5 w-2/3 ">
-                        < Input inputLabelProps={{shrink: true}} placeholder="Birth Date" ref={birthdate} className="label-right" defaultValue="" isRequired={true} type="date" labelName="Birth Date" />
-                        < Input inputLabelProps={{shrink: true}} placeholder="Birth Time" ref={birthtime} isRequired={true} type="time" labelName="Birth Time" />
+                        <TDatePicker ref={birthdate} />
+                        <TTimePicker ref={birthtime} />
                     </div>
                     <div className="grid grid-cols-2 gap-5 w-2/3 ">
                         <SelectInput selectVals={devnagriInitials} ref={birthname} placeholder="Birth Name" isRequired={true} labelName="Birth Name" />

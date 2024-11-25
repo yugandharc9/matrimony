@@ -9,7 +9,6 @@ import { useAuth } from '../auth/authctx';
 import { useNavigate } from 'react-router-dom';
 
 const UploadDocPage = () => {
-  useEffect(() =>{navigate("/profiles")},[]); 
   const [idCard, setIdCard] = useState(null);  // Stores the selected government ID file
   const [preview, setPreview] = useState(null); // Stores the preview URL
   const formRef = useRef();
@@ -31,10 +30,10 @@ const UploadDocPage = () => {
 
     try {
       const response = await uploadVerificationDoc(token,formData);
-      navigate("/profiles");
+      navigate("/login");
     } catch (e) {
       showNotification("danger","","Something went wrong",2000);
-      navigate("/profiles");
+      navigate("/login");
     } finally {
       btnRef.current?.setLoadingOff();
     }

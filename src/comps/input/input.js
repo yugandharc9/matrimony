@@ -80,6 +80,7 @@ const PasswordInput = forwardRef(({ prop }, ref) => {
   const [pwd, setPwd] = useState('');
 
   const handleChange = (e) => {
+    console.log('pwd val',e);
     setPwd(e.target.value);
   }
 
@@ -98,11 +99,13 @@ const PasswordInput = forwardRef(({ prop }, ref) => {
 
   return (
     <>
-      <Input
-        labelName="Password"
+      <TextField
+        label="Password"
         type={showPassword ? 'text' : 'password'}
         value={pwd}
+        variant="outlined"
         ref={ref}
+        required
         onChange={handleChange}
         inputProps={{
           endAdornment: (
@@ -124,6 +127,29 @@ const PasswordInput = forwardRef(({ prop }, ref) => {
             </InputAdornment>
           ),
         }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            backgroundColor: '#492532', // Background color
+            color: '#F0D0A6', // Text color
+            '& fieldset': {
+              borderColor: '#FEF5EC', // Default white border color
+            },
+            '&:hover fieldset': {
+              borderColor: '#FEF5EC', // Keep white border on hover
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#FEF5EC', // Border color on focus
+            },
+          },
+          '& .MuiInputBase-input': {
+            color: '#FEF5EC', // Input text color
+          },
+          '& .MuiInputLabel-root': {
+            color: '#FEF5EC',// Label color
+          },
+          '& .MuiInputLabel-root.Mui-focused': {
+            color: '#FEF5EC', // Focused label color
+          },}}
       />
     </>
   )
@@ -202,7 +228,7 @@ const SelectInput = forwardRef(({ placeholder, labelName, isRequired, selectVals
           '& .MuiMenuItem-root.Mui-selected': {
             backgroundColor: 'transparent', // No gray background
             '&:hover': {
-              backgroundColor: '#f5f5f5', // Custom hover color
+              backgroundColor: '#F5F5F5', // Custom hover color
             },
           },
           '& .MuiMenuItem-root:focus': {
@@ -212,15 +238,27 @@ const SelectInput = forwardRef(({ placeholder, labelName, isRequired, selectVals
       {selectVals && selectVals.map((option) => (
         <MenuItem key={option.value} value={option.value}
           sx={{
-            backgroundColor: '#492533', // Background color for menu item
-            color: '#FEF5EC', // Text color for menu item
+            backgroundColor: '#492533', // Default background color for menu item
+            color: '#FEF5EC', // Default text color for menu item
             '&:hover': {
               backgroundColor: '#F0D0A6', // Hover background color
               color: '#492533', // Hover text color
             },
             '&.Mui-selected': {
-              backgroundColor: '#F0D0A6', // Hover background color
-              color: '#492533', // Hover text color
+              backgroundColor: '#F0D0A6', // Selected background color
+              color: '#492533', // Selected text color
+              '&:hover': {
+                backgroundColor: '#F5F5F5', // Hover background color when selected
+                color: '#492533', // Hover text color when selected
+              },
+            },
+            '&.Mui-focusVisible': {
+              backgroundColor: '#F0D0A6', // Background color when focused
+              color: '#492533', // Text color when focused
+            },
+            '&:focus': {
+              backgroundColor: '#F0D0A6', // Background color for focused items using arrow keys
+              color: '#492533', // Text color for focused items
             },
           }}
         >

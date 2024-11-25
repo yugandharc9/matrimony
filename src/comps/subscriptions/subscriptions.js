@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, List, ListItem, ListItemText, Divider, IconButton } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
+import { BaseLayout } from '../layout/BaseLayout';
 
 // Dummy data for subscriptions
 const subscriptionData = [
@@ -75,6 +76,7 @@ const handlePaymentSuccess = (paymentId, planTitle) => {
 
 const SubscriptionsPage = () => {
   return (
+    <BaseLayout bottomBar={false}>
     <Box sx={{ padding: 4, backgroundColor: '#FEF5EC' }}>
       {/* Header Section */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 3 }}>
@@ -159,6 +161,7 @@ const SubscriptionsPage = () => {
         </Box>
       ))}
     </Box>
+</BaseLayout>
   );
 };
 

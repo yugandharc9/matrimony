@@ -47,26 +47,11 @@ const ProfilesPage = () => {
       setLoading(false);
     }
   }
-
-  const checkCompletion = async () => {
-    try {
-      const r = await profileCompletionStatus(token);
-      let completionStat = r.data;
-      Redirector(completionStat, navigate);
-    } catch (e) {
-      if (e.response.status == 401){
-        removeToken();
-        navigate("/login");
-      }
-      let completionStat = e.response.data;
-      Redirector(completionStat, navigate);
-    }
-  }
   
   
 
 useEffect(() => {
-  checkCompletion();
+  //n();
   loadProfiles({});
   incrementOffset(offset);
 }

@@ -52,10 +52,16 @@ const ApplicationBar = () => {
                                 sx={{ mt: 1 }} // Adds spacing between the avatar and dropdown
                             >
                                 <MenuItem onClick={handleMenuClose}>
-                                    <Typography>My Profile</Typography>
+                                    <Typography>Edit Profile</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={handleMenuClose}>
-                                    <Typography>Settings</Typography>
+                                    <Typography>Upload pics</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleMenuClose}>
+                                    <Typography>Download my biodata</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleMenuClose}>
+                                    <Typography>Delete my account</Typography>
                                 </MenuItem>
                                 <MenuItem
                                     onClick={() => {

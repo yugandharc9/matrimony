@@ -25,10 +25,12 @@ export const AuthProvider = ({ children }) => {
 
   const [token, setToken] = useState(() => getLocalStorageItem('token'));
   const [userId, setUserId] = useState(() => getLocalStorageItem('userId'));
+  const [isAuthenticated,setIsAuthenticated] = useState(false);
 
   const saveToken = (newToken) => {
     setToken(newToken);
     localStorage.setItem('token', newToken);
+    setIsAuthenticated(true);
   };
 
   const saveUserId = (uid) => {
@@ -40,11 +42,12 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     console.log('Before removal:', localStorage.getItem('token'));
     removeLocalStorageItem('token');
+    setIsAuthenticated(false);
     console.log('After removal:', localStorage.getItem('token'));
   };
 
   return (
-    <AuthContext.Provider value={{ token, userId, saveToken, removeToken, saveUserId, }}>
+    <AuthContext.Provider value={{ token, userId, saveToken, removeToken, saveUserId, isAuthenticated}}>
       {children}
     </AuthContext.Provider>
   );

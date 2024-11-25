@@ -17,7 +17,6 @@ const RegisterPage = () => {
     const { saveToken,saveUserId } = useAuth();
     const formRef = useRef();
     const btnRef = useRef();
-    const {removeToken} = useAuth();
 
     const handleLogin = () => {
         navigate("/login");
@@ -34,18 +33,11 @@ const RegisterPage = () => {
                 password_confirmation: password.current?.getVal(), 
                 phone: phone.current?.getVal()
             }})
-
             if (response.status === 201) {
                 showNotification("success", "", "Registration successful", 3000)
                 saveToken(response.data.jwt);
                 saveUserId(response.data.userId);
-                try{
-                    const r = await profileCompletionStatus(response.data.jwt);
-                    navigate("/profiles");
-                } catch(e){
-                    let completionStat = e.response.data;
-                    Redirector(completionStat,navigate);
-                }
+                navigate("/login");
                 
             } else {
                 showNotification("danger", "Error", response.data.error, 3000)

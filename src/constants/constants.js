@@ -52,9 +52,14 @@ export var yesNo = [
     { value: "no", label: "No" },
 ];
 
-export const yesNoDontKnow = [
-    { value: "yes", label: "Yes" },
+export var NoYes = [
     { value: "no", label: "No" },
+    { value: "yes", label: "Yes" },
+];
+
+export const yesNoDontKnow = [
+    { value: "no", label: "No" },
+    { value: "yes", label: "Yes" },
     { value: "I don't know", label: "I don't know" }
 ];
 

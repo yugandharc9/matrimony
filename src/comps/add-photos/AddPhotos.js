@@ -9,7 +9,6 @@ import { useAuth } from '../auth/authctx';
 import { useNavigate} from 'react-router-dom';
 
 const UploadPicsPage = () => {
-    useEffect(() =>{navigate("/profiles")},[]); 
     const [idCards, setIdCards] = useState([]);  // Stores the selected files
     const [previews, setPreviews] = useState([]); // Stores the preview URLs
     const formRef = useRef();

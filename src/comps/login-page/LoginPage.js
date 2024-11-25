@@ -26,13 +26,36 @@ const LoginPage = () => {
         setOpen(false);
     };
     
+    const checkCompletion = async () => {
+        try {
+          const r = await profileCompletionStatus(token);
+          let completionStat = r.data;
+          Redirector(completionStat, navigate);
+        } catch (e) {
+          if (e.response.status == 401){
+            navigate("/logout");
+          }
+          let completionStat = e.response.data;
+          Redirector(completionStat, navigate);
+        }
+      }
+      
     useEffect(()=> {
         if(token != null){
             console.log('navigation from useEffect LoginPage to profiles');
-            navigate("/profiles");
+            checkCompletion();
+            //navigate("/profiles");
+        }
+    },[]);
+    
+    useEffect(()=> {
+        if(token != null){
+            console.log('navigation from useEffect LoginPage to profiles');
+            checkCompletion();
+            //navigate("/profiles");
         }
     },[token]);
-    
+
     const handleLogin = async (event) => {
         event.preventDefault();
         btnRef.current?.setLoadingOn();            
@@ -42,7 +65,7 @@ const LoginPage = () => {
                 if (response.data.jwt) {
                     saveToken(response.data.jwt);
                     saveUserId(response.data.user_id);
-                    navigate("/profiles");
+                    navigate("/login");
                 }
             }  
         } catch (e) {
@@ -50,7 +73,7 @@ const LoginPage = () => {
                 if (e.response.data.jwt) {
                     saveToken(e.response.data.jwt);
                     saveUserId(e.response.data.user_id);
-                    navigate("/profiles");
+                    navigate("/login");
                 }
             } else {
                 showNotification("danger", "", e.response.data.error, 2000);
