@@ -86,7 +86,7 @@ const AddProfileInfoPage = () => {
             console.log('e is ',e);
             if (e.response.status == 422) {
                 navigate("/login");
-            } {
+            } else {
                 showNotification("danger", "", "Something went wrong", 2000);
             }
         } finally {

@@ -42,15 +42,44 @@ const UploadPicsPage = () => {
         }
     };
 
+    
     const handleDeleteIdCard = (index) => {
-        setIdCards((prevIdCards) => prevIdCards.filter((_, i) => i !== index));
-        setPreviews((prevPreviews) => prevPreviews.filter((_, i) => i !== index));
+    
+        setIdCards((prevIdCards) => {
+            const updatedIdCards = prevIdCards.filter((_, i) => i !== index);
+            if (updatedIdCards.length === 0) {
+                fileRef.current.value = ""; 
+            }
+            return updatedIdCards; 
+        });
+    
+        setPreviews((prevPreviews) => {
+            const updatedPreviews = prevPreviews.filter((_, i) => i !== index);
+            return updatedPreviews; 
+        });
     };
 
     const handleIdCardChange = (e) => {
         const filesArray = Array.from(e.target.files);
-        setIdCards(filesArray); // Update files array
-        setPreviews(filesArray.map((file) => URL.createObjectURL(file))); // Generate preview URLs
+        console.log(e);
+        var err = false;
+        for (let i = 0; i < filesArray.length; i++) {
+            let fileObj = filesArray[i];
+            console.log('file ext', fileObj.type);
+            if (!fileObj.type.startsWith('image/')) {
+                err = true;
+                break;
+            }
+        }
+        if (!err) {
+            setIdCards(filesArray); // Update files array
+            setPreviews(filesArray.map((file) => URL.createObjectURL(file))); // Generate preview URLs            
+        } else {
+            setIdCards([]);
+            setPreviews([]);
+            fileRef.current.value = "";
+            showNotification("danger", "Invalid filetype ", "Only images are allowed", 3000);
+        }
     };
 
     return (

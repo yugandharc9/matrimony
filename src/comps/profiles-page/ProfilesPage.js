@@ -14,7 +14,7 @@ import Skeleton from '@mui/material/Skeleton';
 
 const ProfilesPage = () => {
   const [profiles,setProfiles] = useState([]);
-  const {token,removeToken} = useAuth();
+  const {token,removeToken,userId,isAuthenticated} = useAuth();
   const navigate = useNavigate();
   const [offset,setOffset] = useState(0);
   const observerRef = useRef(null); // Ref for the observer
@@ -52,6 +52,11 @@ const ProfilesPage = () => {
 
 useEffect(() => {
   //n();
+  console.log('start');
+  console.log(isAuthenticated);
+  console.log(token);
+  console.log(userId);
+  console.log('end');
   loadProfiles({});
   incrementOffset(offset);
 }

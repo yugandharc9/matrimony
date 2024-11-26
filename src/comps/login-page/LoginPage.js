@@ -1,4 +1,4 @@
-import React, { useState, useRef,useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FormButton } from '../button/button';
 import { Logo } from '../logo/logo'
 import { Input, PasswordInput } from '../input/input'
@@ -7,7 +7,7 @@ import { useAuth } from '../auth/authctx';
 import { login, profileCompletionStatus } from '../../services/apiService'
 import { useNavigate } from 'react-router-dom';
 import ForgotPasswordDialog from '../forgot-password-dialog/ForgotPasswordDialog';
-import {Redirector} from '../routing/redirector';
+import { Redirector } from '../routing/redirector';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ const LoginPage = () => {
     const password = useRef();
     const btnRef = useRef();
     const formRef = useRef();
-    const {token,saveToken,saveUserId} = useAuth();
+    const { token, saveToken, saveUserId,setIsAuthenticated } = useAuth();
     const [open, setOpen] = useState(false);
 
     const handleOpenDialog = () => {
@@ -25,40 +25,45 @@ const LoginPage = () => {
     const handleCloseDialog = () => {
         setOpen(false);
     };
-    
+
     const checkCompletion = async () => {
         try {
-          const r = await profileCompletionStatus(token);
-          let completionStat = r.data;
-          Redirector(completionStat, navigate);
+            const r = await profileCompletionStatus(token);
+            let completionStat = r.data;
+            setIsAuthenticated(true);
+            Redirector(completionStat, navigate);
         } catch (e) {
-          if (e.response.status == 401){
-            navigate("/logout");
-          }
-          let completionStat = e.response.data;
-          Redirector(completionStat, navigate);
+            console.log('e is ', e);
+            if (e.code == "ERR_NETWORK") {
+                showNotification("info", "Internet is disconnected", "", 2000);
+            }
+            if (e.response.status == 401) {
+                navigate("/logout");
+            }
+            let completionStat = e.response.data;
+            Redirector(completionStat, navigate);
         }
-      }
-      
-    useEffect(()=> {
-        if(token != null){
+    }
+
+    useEffect(() => {
+        if (token != null) {
             console.log('navigation from useEffect LoginPage to profiles');
             checkCompletion();
             //navigate("/profiles");
         }
-    },[]);
-    
-    useEffect(()=> {
-        if(token != null){
+    }, []);
+
+    useEffect(() => {
+        if (token != null) {
             console.log('navigation from useEffect LoginPage to profiles');
             checkCompletion();
             //navigate("/profiles");
         }
-    },[token]);
+    }, [token]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        btnRef.current?.setLoadingOn();            
+        btnRef.current?.setLoadingOn();
         try {
             const response = await login({ email: phone.current?.getVal(), password: password.current?.getVal() })
             if (response.status == 200) {
@@ -67,8 +72,13 @@ const LoginPage = () => {
                     saveUserId(response.data.user_id);
                     navigate("/login");
                 }
-            }  
+            }
         } catch (e) {
+            console.log('e is ',e);
+            if (e.code == "ERR_NETWORK") {
+                showNotification("info", "Internet is disconnected", "", 2000);
+            }
+
             if (e.response.status == 417) {
                 if (e.response.data.jwt) {
                     saveToken(e.response.data.jwt);

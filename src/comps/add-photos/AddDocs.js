@@ -14,7 +14,8 @@ const UploadDocPage = () => {
   const formRef = useRef();
   const btnRef = useRef();
   const fileRef = useRef();
-  const {token} = useAuth();
+  const { token } = useAuth();
+  const [fileType, setFileType] = useState(null); // Track the type of file (image or PDF)
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -29,10 +30,10 @@ const UploadDocPage = () => {
     btnRef.current?.setLoadingOn();
 
     try {
-      const response = await uploadVerificationDoc(token,formData);
+      const response = await uploadVerificationDoc(token, formData);
       navigate("/login");
     } catch (e) {
-      showNotification("danger","","Something went wrong",2000);
+      showNotification("danger", "", "Something went wrong", 2000);
       navigate("/login");
     } finally {
       btnRef.current?.setLoadingOff();
@@ -40,16 +41,31 @@ const UploadDocPage = () => {
   };
 
   const handleDeleteIdCard = () => {
-    fileRef.current.value = ""; // Clear the file input
+    fileRef.current.value = null // Clear the file input
     setIdCard(null);
     setPreview(null); // Remove the preview URL
   };
 
   const handleIdCardChange = (e) => {
+    setIdCard(null);
+    setPreview(null); 
+    setFileType(null);
     const file = e.target.files[0];
+    console.log('file type is ', file.type);
     if (file) {
-      setIdCard(file); // Store the file
-      setPreview(URL.createObjectURL(file)); // Create a preview URL
+      if (file.type.startsWith('image/')) {
+        setIdCard(file);
+        setPreview(URL.createObjectURL(file)); // Create a preview URL
+        setFileType('image');
+      } else if (file.type.startsWith('application/pdf')) {
+        setIdCard(file);
+        setPreview(URL.createObjectURL(file)); // Create a preview URL
+        setFileType('pdf');
+      } else {
+        showNotification("danger", "Invalid filetype ", "Image or pdf is allowed", 3000);
+        setIdCard(null);
+        fileRef.current.value = null;
+      }
     }
   }
 
@@ -61,9 +77,9 @@ const UploadDocPage = () => {
         <input
           name="idPicker"
           type="file"
+          accept="image/*,application/pdf"
           className='text-white bg-custom-c1'
           ref={fileRef}
-          placeholder='Hi'
           onChange={handleIdCardChange}
           required
         />
@@ -71,13 +87,18 @@ const UploadDocPage = () => {
         <div className='flex flex-row mx-auto'>
           {preview && (
             <Box sx={{}}>
-              <img
+              {fileType == 'image' ? (<img
                 src={preview}
                 alt="Uploaded ID Card"
+                className='text-custom-c4'
                 style={{
                   boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                 }}
-              />
+              />) : (<embed
+                src={preview}
+                type="application/pdf"
+                className="w-full max-w-xs h-60 border rounded"
+              />)}
               <IconButton
                 onClick={handleDeleteIdCard}
                 sx={{

@@ -7,11 +7,10 @@ import { useNavigate } from "react-router-dom";
 
 const ApplicationBar = () => {
     const navigate = useNavigate();
-    const isLoggedIn = true;
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    const {removeToken} = useAuth();
+    const {isAuthenticated} = useAuth();
 
     const handleMenuClose = () => {
         setAnchorEl(null);
@@ -23,66 +22,68 @@ const ApplicationBar = () => {
     }
 
     return (
-        <>
-            <AppBar position="sticky" >
-                <Toolbar className="bg-custom-c1 border-custom-c3 shadow-lg shadow-custom-c3">
-                    <HorrizontalLogo />
-                    {isLoggedIn ? (
-                        <Box>
-                            <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
-                                <Avatar
-                                    alt={userProfile.name}
-                                    src={userProfile.picture}
-                                    sx={{ width: 40, height: 40 }}
-                                />
-                            </IconButton>
+        <AppBar position="sticky">
+    <Toolbar className="bg-custom-c1 border-custom-c3 shadow-lg shadow-custom-c3" sx={{ justifyContent: "space-between" }}>
+        {/* Left-aligned content */}
+        <HorrizontalLogo />
 
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleMenuClose}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                sx={{ mt: 1 }} // Adds spacing between the avatar and dropdown
-                            >
-                                <MenuItem onClick={handleMenuClose}>
-                                    <Typography>Edit Profile</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={handleMenuClose}>
-                                    <Typography>Upload pics</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={handleMenuClose}>
-                                    <Typography>Download my biodata</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={handleMenuClose}>
-                                    <Typography>Delete my account</Typography>
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        navigate("/logout");
-                                        handleMenuClose();
-                                    }}
-                                >
-                                    <Typography>Logout</Typography>
-                                </MenuItem>
-                            </Menu>
-                        </Box>
-                    ) : (
-                        <Typography>
-                            <a href="/login" style={{ color: 'white', textDecoration: 'none' }}>
-                                Login
-                            </a>
-                        </Typography>
-                    )}
-                </Toolbar>
-            </AppBar>
-        </>
+        {/* Right-aligned content */}
+        {isAuthenticated ? (
+            <Box>
+                <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+                    <Avatar
+                        alt={userProfile.name}
+                        src={userProfile.picture}
+                        sx={{ width: 40, height: 40 }}
+                    />
+                </IconButton>
+
+                <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    sx={{ mt: 1 }} // Adds spacing between the avatar and dropdown
+                >
+                    <MenuItem onClick={handleMenuClose}>
+                        <Typography>Edit Profile</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Typography>Upload pics</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Typography>Download my biodata</Typography>
+                    </MenuItem>
+                    <MenuItem onClick={handleMenuClose}>
+                        <Typography>Delete my account</Typography>
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => {
+                            navigate("/logout");
+                            handleMenuClose();
+                        }}
+                    >
+                        <Typography>Logout</Typography>
+                    </MenuItem>
+                </Menu>
+            </Box>
+        ) : (
+            <Typography>
+                <a href="/login" style={{ color: 'white', textDecoration: 'none' }}>
+                    Login
+                </a>
+            </Typography>
+        )}
+    </Toolbar>
+</AppBar>
+
     ) 
 
 }
