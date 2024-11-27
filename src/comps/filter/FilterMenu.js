@@ -1,5 +1,8 @@
-import { Popover, TextField, MenuItem, FormControl, InputLabel, Select, Button } from '@mui/material';
+import { Popover, TextField, MenuItem, Checkbox } from '@mui/material';
 import { useState } from 'react';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import { heights, educationList, maritialStats } from '../../constants/constants';
+import showNotification from '../notify/notify';
 
 export const FilterMenu = ({ anchorEl, open, onClose }) => {
   const [nameSearch, setNameSearch] = useState('');
@@ -26,22 +29,47 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
     setChallenged('');
   };
 
+
+  const listToCommaSeperated = (prev, current, idx) => {
+    if (idx == 0) {
+      return current 
+    } else {
+      return prev + ',' + current
+    }
+  }
+
+  const lookUpLabel = (arr, value) => {
+    for (let i = 0; i < arr.length; i++) {
+      let ele = arr[i];
+      if (ele?.value == value) {
+        return ele?.label;
+      }
+    }
+    return value;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Submit filter data
+    if (ageTo < ageFrom) {
+      showNotification("danger", "Please select correct range for age", `Upto age ${ageTo} is less than from age ${ageFrom}`, 3000)
+      return
+    }
+
+    if (heightFrom < heightTo) {
+      showNotification("danger", "Please select correct range for height", `Upto height ${lookUpLabel(heights,heightFrom)} is less than from age ${lookUpLabel(heights,heightTo)}`, 3000)
+      return
+    }
+
     console.log({
-      nameSearch,
-      ageFrom,
-      ageTo,
-      heightFrom,
-      heightTo,
-      maritalStatus,
-      education,
-      annualIncome,
-      mangalDosh,
-      challenged,
-    });
-  };
+      name: nameSearch,
+      age_from: ageFrom,
+      age_to: ageTo,
+      height_from: heightFrom,
+      height_to: heightTo,
+      maritial_status: maritalStatus.reduce(listToCommaSeperated, ""), //, //
+      education: education.reduce(listToCommaSeperated, "")
+    })
+  }
 
   return (
     <Popover
@@ -50,19 +78,26 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
       onClose={onClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      className="p-6 rounded-lg shadow-lg max-w-lg"
-      style={{ 
-        backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-        zIndex: 1300 }} // Popup background color and z-index to ensure it appears above content
+      PaperProps={{
+        style: {
+          backgroundColor: '#492533', // Light white background
+          borderRadius: '16px', // Rounded corners
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)', // Custom shadow
+          padding: '16px', // Internal padding
+        },
+      }}
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        zIndex: 1300
+      }} // Popup background color and z-index to ensure it appears above content
     >
-      <header className="flex justify-between items-center mb-4">
-        <button onClick={handleClear} className="text-[#F5D0A6]">
-          Clear All
+      <header className="flex justify-center items-center h-8 bg-custom-c1 border border-white rounded-lg" onClick={handleClear}>
+        <button onClick={handleClear} className="text-custom-c4">
+          <RestartAltIcon />    Reset Filters
         </button>
       </header>
 
-      <form onSubmit={handleSubmit} className="space-y-4 text-custom-c4 bg-custom-c1">
-        {/* Name Search */}
+      <form onSubmit={handleSubmit} className="space-y-10 text-custom-c4 bg-custom-c1">
         <div>
           <TextField
             label="Name"
@@ -72,15 +107,44 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
             onChange={(e) => setNameSearch(e.target.value)}
             placeholder="Enter Name"
             InputProps={{
-              style: { backgroundColor: '#492533' },
+              style: {
+                backgroundColor: '#492533',
+              },
+            }}
+            sx={{
+              marginTop: 2,
+              borderColor: 'white',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // White border
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // White border on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // White border when focused
+                },
+              },
+              '& .MuiInputBase-input': {
+                color: 'white', // White input text
+              },
+              '& .MuiFormLabel-root': {
+                color: 'white', // White label
+              },
+              '& .MuiFormLabel-root.Mui-focused': {
+                color: 'white', // White label when focused
+              },
+              '& .MuiSelect-icon': {
+                color: 'white'
+              }
             }}
           />
         </div>
 
-        {/* Age Filter */}
         <div>
-          <h2 className="mb-2">Age should be between</h2>
+          <h2 className="mb-2 text-white">Age should be between</h2>
           <div className="flex space-x-4">
+            {/* "From" TextField */}
             <TextField
               select
               label="From"
@@ -89,16 +153,48 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
               variant="outlined"
               fullWidth
               InputProps={{
-                style: { backgroundColor: '#492533' },
+                style: { backgroundColor: '#492533', color: 'white' }, // Background and text color
+              }}
+              InputLabelProps={{
+                style: { color: 'white' }, // Label color
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'white', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Border color on focus
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white', // Text color
+                },
+                '& .MuiFormLabel-root': {
+                  color: 'white', // Label color
+                },
+                '& .MuiFormLabel-root.Mui-focused': {
+                  color: 'white', // Label color on focus
+                },
+                '& .MuiSelect-icon': {
+                  color: 'white'
+                }
               }}
             >
               {[...Array(61).keys()].map((age) => (
-                <MenuItem key={age} value={age + 20}>
+                <MenuItem key={age} value={age + 20} style={{ color: 'black' }}>
                   {age + 20} yrs
                 </MenuItem>
               ))}
             </TextField>
+
+            {/* Dash Separator */}
             <span className="text-[#FEF5EC]">-</span>
+
+            {/* "To" TextField */}
             <TextField
               select
               label="To"
@@ -107,11 +203,39 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
               variant="outlined"
               fullWidth
               InputProps={{
-                style: { backgroundColor: '#492533' },
+                style: { backgroundColor: '#492533', color: 'white' }, // Background and text color
+              }}
+              InputLabelProps={{
+                style: { color: 'white' }, // Label color
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'white', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Border color on focus
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white', // Text color
+                },
+                '& .MuiFormLabel-root': {
+                  color: 'white', // Label color
+                },
+                '& .MuiFormLabel-root.Mui-focused': {
+                  color: 'white', // Label color on focus
+                },
+                '& .MuiSelect-icon': {
+                  color: 'white'
+                }
               }}
             >
               {[...Array(61).keys()].map((age) => (
-                <MenuItem key={age} value={age + 20}>
+                <MenuItem key={age} value={age + 20} style={{ color: 'black' }}>
                   {age + 20} yrs
                 </MenuItem>
               ))}
@@ -119,7 +243,7 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
           </div>
         </div>
 
-        {/* Height Filter */}
+
         <div>
           <h2 className="mb-2">Height should be between</h2>
           <div className="flex space-x-4">
@@ -133,12 +257,38 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
               InputProps={{
                 style: { backgroundColor: '#492533' },
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'white', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Border color on focus
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white', // Text color
+                },
+                '& .MuiFormLabel-root': {
+                  color: 'white', // Label color
+                },
+                '& .MuiFormLabel-root.Mui-focused': {
+                  color: 'white', // Label color on focus
+                },
+                '& .MuiSelect-icon': {
+                  color: 'white'
+                }
+              }}
             >
-              {[...Array(21).keys()].map((i) => (
-                <MenuItem key={i} value={(i + 4.5).toFixed(1)}>
-                  {(i + 4.5).toFixed(1)} feet
+              {heights.map((i) => (
+                <MenuItem key={i} value={i.value}>
+                  {i.label}
                 </MenuItem>
-              ))}
+              ))
+              }
             </TextField>
             <span className="text-[#FEF5EC]">-</span>
             <TextField
@@ -151,112 +301,324 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
               InputProps={{
                 style: { backgroundColor: '#492533' },
               }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'white', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Border color on focus
+                  },
+                },
+                '& .MuiInputBase-input': {
+                  color: 'white', // Text color
+                },
+                '& .MuiFormLabel-root': {
+                  color: 'white', // Label color
+                },
+                '& .MuiFormLabel-root.Mui-focused': {
+                  color: 'white', // Label color on focus
+                },
+                '& .MuiSelect-icon': {
+                  color: 'white'
+                }
+              }}
             >
-              {[...Array(21).keys()].map((i) => (
-                <MenuItem key={i} value={(i + 4.5).toFixed(1)}>
-                  {(i + 4.5).toFixed(1)} feet
+              {heights.map((i) => (
+                <MenuItem key={i} value={i.value}>
+                  {i.label}
                 </MenuItem>
               ))}
             </TextField>
           </div>
         </div>
 
-        {/* Marital Status Filter */}
         <div>
-          <h2 className="mb-2">Marital Status Preference</h2>
+          <h2 className="mb-2 text-white">Marital Status Preference</h2>
           <TextField
             select
             label="Marital Status"
-            multiple
-            value={maritalStatus}
-            onChange={(e) => setMaritalStatus([...e.target.selectedOptions].map(option => option.value))}
             variant="outlined"
             fullWidth
-            InputProps={{
-              style: { backgroundColor: '#492533' },
+            SelectProps={{
+              multiple: true, // Enable multiple selection
+              value: maritalStatus,
+              onChange: (e) => setMaritalStatus(e.target.value),
+              renderValue: (selected) => selected.join(', '), // Display selected values
+              style: { backgroundColor: '#492533', color: 'white' }, // Style for dropdown
+              MenuProps: {
+                PaperProps: {
+                  style: { backgroundColor: '#492533', color: 'white' }, // Style for dropdown menu
+                },
+              },
+            }}
+            InputLabelProps={{
+              style: { color: 'white' }, // Label color
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white',
+                },
+              },
+              '& .MuiFormLabel-root': {
+                color: 'white', // Label color
+              },
+              '& .MuiFormLabel-root.Mui-focused': {
+                color: 'white', // Label color on focus
+              },
+              '& .MuiSelect-icon': {
+                color: 'white', // Dropdown arrow color
+              },
             }}
           >
-            <MenuItem value="Unmarried">Unmarried</MenuItem>
-            <MenuItem value="Married">Married</MenuItem>
-            <MenuItem value="Divorced">Divorced</MenuItem>
-            <MenuItem value="Widowed">Widowed</MenuItem>
+
+
+
+            {maritialStats.map((status) => (
+              <MenuItem key={status.value} value={status.value}>
+                <Checkbox
+                  checked={maritalStatus.indexOf(status.value) > -1}
+                  style={{ color: 'white' }} // Checkbox color
+                />
+                {status.label}
+              </MenuItem>
+            ))}
           </TextField>
         </div>
 
-        {/* Education Filter */}
         <div>
-          <h2 className="mb-2">Education</h2>
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Education</InputLabel>
-            <Select
-              multiple
-              value={education}
-              onChange={(e) => setEducation(e.target.value)}
-              renderValue={(selected) => selected.join(', ')}
-              style={{ backgroundColor: '#492533' }}
-            >
-              <MenuItem value="Undergraduate">Undergraduate</MenuItem>
-              <MenuItem value="Graduate">Graduate</MenuItem>
-              <MenuItem value="Post Graduate">Post Graduate</MenuItem>
-              <MenuItem value="Masters">Masters</MenuItem>
-              <MenuItem value="Doctorate">Doctorate</MenuItem>
-            </Select>
-          </FormControl>
+          <h2 className="mb-2 text-white">Education</h2>
+          <TextField
+            select
+            label="Education"
+            variant="outlined"
+            fullWidth
+            value={education}
+            onChange={(e) => setEducation(e.target.value)}
+            SelectProps={{
+              multiple: true,
+              renderValue: (selected) => selected.join(', '),
+              MenuProps: {
+                PaperProps: {
+                  style: { backgroundColor: '#492533', color: 'white' },
+                },
+              },
+            }}
+            InputProps={{
+              style: { backgroundColor: '#492533', color: 'white' },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Default border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Hover border color
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Focus border color
+                },
+              },
+              '& .MuiSelect-icon': {
+                color: 'white', // Dropdown arrow color
+              },
+              '& .MuiInputLabel-root': {
+                color: 'white', // Label color
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'white', // Label color on focus
+              },
+            }}
+          >
+            {educationList.map((level) => (
+              <MenuItem key={level.value} value={level.value}>
+                <Checkbox
+                  checked={education.indexOf(level.value) > -1}
+                  style={{ color: 'white' }} // Checkbox color
+                />
+                {level.label}
+              </MenuItem>
+            ))}
+          </TextField>
         </div>
 
-        {/* Annual Income Filter */}
         <div>
           <h2 className="mb-2">Annual Income</h2>
           <TextField
+            select
             label="Annual Income"
             variant="outlined"
             value={annualIncome}
             onChange={(e) => setAnnualIncome(e.target.value)}
-            placeholder="Enter Annual Income"
             fullWidth
             InputProps={{
-              style: { backgroundColor: '#492533',textColor: 'white' },
+              style: { backgroundColor: '#492533', color: 'white' }, // Make text white
             }}
-          />
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Default border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Hover border color
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Focus border color
+                },
+              },
+              '& .MuiSelect-icon': {
+                color: 'white', // Dropdown arrow color
+              },
+              '& .MuiInputLabel-root': {
+                color: 'white', // Label color
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'white', // Label color on focus
+              },
+            }}
+          >
+            <MenuItem value="1000000">More than 10 lakh</MenuItem>
+            <MenuItem value="2000000">More than 20 lakh</MenuItem>
+            <MenuItem value="3000000">More than 30 lakh</MenuItem>
+            <MenuItem value="4000000">More than 40 lakh</MenuItem>
+            <MenuItem value="5000000">More than 50 lakh</MenuItem>
+            <MenuItem value="7500000">More than 75 lakh</MenuItem>
+            <MenuItem value="10000000">More than 1 Crore</MenuItem>
+          </TextField>
         </div>
 
-        {/* Mangal Dosh Filter */}
         <div>
-          <h2 className="mb-2">Mangal Dosh</h2>
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Mangal Dosh</InputLabel>
-            <Select
-              value={mangalDosh}
-              onChange={(e) => setMangalDosh(e.target.value)}
-              style={{ backgroundColor: '#492533' }}
-            >
-              <MenuItem value="Yes">Yes</MenuItem>
-              <MenuItem value="No">No</MenuItem>
-            </Select>
-          </FormControl>
+          <h2 className="mb-2 text-white">Mangal Dosh</h2>
+          <TextField
+            select
+            label="Mangal Dosh"
+            variant="outlined"
+            fullWidth
+            value={mangalDosh}
+            onChange={(e) => setMangalDosh(e.target.value)}
+            InputLabelProps={{
+              style: { color: 'white' }, // Label color
+            }}
+            InputProps={{
+              style: { backgroundColor: '#492533', color: 'white' },
+            }}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: {
+                  style: { backgroundColor: '#492533', color: 'white' }, // Dropdown menu styling
+                },
+              },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Default border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Hover border color
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Focus border color
+                },
+              },
+              '& .MuiSelect-icon': {
+                color: 'white', // Dropdown arrow color
+              },
+              '& .MuiInputLabel-root': {
+                color: 'white', // Label color
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'white', // Label color on focus
+              },
+            }}
+          >
+            <MenuItem value="Yes">Yes</MenuItem>
+            <MenuItem value="No">No</MenuItem>
+          </TextField>
         </div>
 
-        {/* Challenged Filter */}
         <div>
-          <h2 className="mb-2">Challenged</h2>
-          <FormControl fullWidth variant="outlined">
-            <InputLabel>Challenged</InputLabel>
-            <Select
-              value={challenged}
-              onChange={(e) => setChallenged(e.target.value)}
-              style={{ backgroundColor: '#492533' }}
-            >
-              <MenuItem value="Yes">Yes</MenuItem>
-              <MenuItem value="No">No</MenuItem>
-            </Select>
-          </FormControl>
+          <h2 className="mb-2 text-white">Challenged</h2>
+          <TextField
+            select
+            label="Challenged"
+            variant="outlined"
+            fullWidth
+            value={challenged}
+            onChange={(e) => setChallenged(e.target.value)}
+            InputLabelProps={{
+              style: { color: 'white' }, // Label color
+            }}
+            InputProps={{
+              style: { backgroundColor: '#492533', color: 'white' },
+            }}
+            SelectProps={{
+              MenuProps: {
+                PaperProps: {
+                  style: { backgroundColor: '#492533', color: 'white' }, // Dropdown menu styling
+                },
+              },
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Default border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Hover border color
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Focus border color
+                },
+              },
+              '& .MuiSelect-icon': {
+                color: 'white', // Dropdown arrow color
+              },
+              '& .MuiInputLabel-root': {
+                color: 'white', // Label color
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'white', // Label color on focus
+              },
+              '&:hover fieldset': {
+                borderColor: '#F0D0A6', // Hover border color
+              },
+            }}
+          >
+            <MenuItem value="Yes">Yes</MenuItem>
+            <MenuItem value="No">No</MenuItem>
+          </TextField>
         </div>
 
-        {/* Submit Filter Button */}
-        <Button type="submit" variant="contained" color="primary" className="mt-4 w-full">
+
+        <button type="submit" variant="contained" color="primary" className="w-full border-white border h-12 rounded-lg bg-custom-c1 text-white">
           Apply Filters
-        </Button>
+        </button>
       </form>
     </Popover>
   );
+
+  /* return (
+    <Popover
+      open={open}
+      onClose={onClose}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      style={{ 
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', 
+        zIndex: 1300 }} // Popup background color and z-index to ensure it appears above content
+    >
+      
+    </Popover> 
+  ) */
 };

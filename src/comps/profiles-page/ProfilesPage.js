@@ -6,8 +6,6 @@ import BottomBar2 from '../application-bar/BottomBar';
 import {FilterMenu} from '../filter/FilterMenu';
 import { getProfiles} from '../../services/apiService';
 import { useAuth } from '../auth/authctx';
-import { profileCompletionStatus } from '../../services/apiService';
-import { Redirector } from '../routing/redirector';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from '@mui/material/Skeleton';
 
