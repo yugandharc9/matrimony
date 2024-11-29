@@ -3,7 +3,8 @@ import { Input, SelectInput, InputArea } from "../input/input";
 import { educationList, rashis, devnagriInitials, genders, heights, maritialStats, yesNo,NoYes, yesNoDontKnow } from "../../constants/constants";
 import { FormButton } from '../button/button';
 import { BaseLayout, BaseForm } from '../layout/BaseLayout'
-import { createProfile } from "../../services/apiService"; import showNotification from '../notify/notify'; import { useNavigate } from 'react-router-dom';
+import { createProfile } from "../../services/apiService"; import showNotification from '../notify/notify'; 
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 import {TDatePicker,TTimePicker} from '../input/DtPicker';
 

@@ -39,9 +39,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const removeToken = () => {
+    console.log('before token in memory',token);
     setToken(null);
     removeLocalStorageItem('token');
+    removeLocalStorageItem('userId');
     setIsAuthenticated(false);
+    console.log('after token in memory',token);
+    console.log('after userId in storage',getLocalStorageItem('userId'));
+    console.log('after token in storage',getLocalStorageItem('token'));
   };
 
   return (

@@ -15,6 +15,7 @@ import {FilterMenu} from "../filter/FilterMenu";
 import {ShowProfilePage} from '../show-profile/ShowProfilePage';
 import { UserChat } from "../chat-page/UserChat";
 import { LogoutPage } from "../logout-page/LogoutPage";
+import FilteredProfilesPage from "../profiles-page/FilteredProfilesPage";
 
 const AppRouter = () => {
    return ( <div>
@@ -26,6 +27,7 @@ const AppRouter = () => {
       <Route path="/info" element={<AddProfileInfoPage operation="create" />} />
       <Route path="/update/info" element={<AddProfileInfoPage operation="update" />} />
       <Route path="/profiles" element={<ProfilesPage />} />
+      <Route path="/filtered/profiles" element={<FilteredProfilesPage />} />
       <Route path="/chats" element={<ChatPage />} />
       <Route path="/featured" element={<FeaturedAdvertisingPage />} />
       <Route path="/my-chats" element={<MyChatsPage />} />

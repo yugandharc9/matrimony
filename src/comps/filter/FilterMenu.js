@@ -1,10 +1,15 @@
 import { Popover, TextField, MenuItem, Checkbox } from '@mui/material';
-import { useState } from 'react';
+import { useState,useEffect,useRef } from 'react';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { heights, educationList, maritialStats } from '../../constants/constants';
 import showNotification from '../notify/notify';
+import { useFilter } from './filterctx';
+import {useNavigate} from 'react-router-dom';
+
 
 export const FilterMenu = ({ anchorEl, open, onClose }) => {
+  const navigate = useNavigate();
+  const {filterParams,saveParams,clearParams} = useFilter();
   const [nameSearch, setNameSearch] = useState('');
   const [ageFrom, setAgeFrom] = useState('');
   const [ageTo, setAgeTo] = useState('');
@@ -15,6 +20,8 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
   const [annualIncome, setAnnualIncome] = useState('');
   const [mangalDosh, setMangalDosh] = useState('');
   const [challenged, setChallenged] = useState('');
+
+  console.log('filter params', filterParams);
 
   const handleClear = () => {
     setNameSearch('');
@@ -27,12 +34,37 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
     setAnnualIncome('');
     setMangalDosh('');
     setChallenged('');
+    clearParams();
+    navigate("/profiles");
   };
 
+  useEffect(() => {
+    console.log('useEffect of FilterMenu');
+    console.log('filterParams',filterParams);
+    setNameSearch(filterParams.name_search || '');
+    setAgeFrom(filterParams.age_from || '');
+    setAgeTo(filterParams.age_to || '');
+    setHeightFrom(filterParams.height_from || '');
+    setHeightTo(filterParams.height_to || '');
+    if (filterParams.maritial_status) {
+      setMaritalStatus(filterParams.maritial_status.split(","));
+    } else {      
+      setMaritalStatus([]);
+    }
+    if (filterParams.education) {
+      setEducation(filterParams.education.split(","));
+    } else {
+      setEducation([]);
+    }
+    setAnnualIncome(filterParams.annual_income || '');
+    setMangalDosh(filterParams.mangal_dosh || '');
+    setChallenged(filterParams.challenged || '');
+    
+  },[filterParams])
 
   const listToCommaSeperated = (prev, current, idx) => {
     if (idx == 0) {
-      return current 
+      return current
     } else {
       return prev + ',' + current
     }
@@ -55,20 +87,31 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
       return
     }
 
-    if (heightFrom < heightTo) {
-      showNotification("danger", "Please select correct range for height", `Upto height ${lookUpLabel(heights,heightFrom)} is less than from age ${lookUpLabel(heights,heightTo)}`, 3000)
+    if (heightFrom > heightTo) {
+      showNotification("danger", "Please select correct range for height", `Upto height ${lookUpLabel(heights, heightFrom)} is less than ${lookUpLabel(heights, heightTo)}`, 3000)
       return
     }
-
-    console.log({
-      name: nameSearch,
+    const filteredObj = Object.entries({
+      name_search: nameSearch,
       age_from: ageFrom,
       age_to: ageTo,
       height_from: heightFrom,
       height_to: heightTo,
-      maritial_status: maritalStatus.reduce(listToCommaSeperated, ""), //, //
+      maritial_status: maritalStatus.reduce(listToCommaSeperated, ""),
+      mangal_dosh: mangalDosh,
+      challenged: challenged,
+      annual_income: annualIncome,
       education: education.reduce(listToCommaSeperated, "")
-    })
+    }).reduce((acc, [key, value]) => {
+      if (value !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    saveParams(filteredObj);
+    navigate("/filtered/profiles");
+    onClose();
   }
 
   return (
@@ -607,18 +650,4 @@ export const FilterMenu = ({ anchorEl, open, onClose }) => {
       </form>
     </Popover>
   );
-
-  /* return (
-    <Popover
-      open={open}
-      onClose={onClose}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      style={{ 
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', 
-        zIndex: 1300 }} // Popup background color and z-index to ensure it appears above content
-    >
-      
-    </Popover> 
-  ) */
 };

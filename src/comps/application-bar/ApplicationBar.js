@@ -24,10 +24,8 @@ const ApplicationBar = () => {
     return (
         <AppBar position="sticky">
     <Toolbar className="bg-custom-c1 border-custom-c3 shadow-lg shadow-custom-c3" sx={{ justifyContent: "space-between" }}>
-        {/* Left-aligned content */}
         <HorrizontalLogo />
 
-        {/* Right-aligned content */}
         {isAuthenticated ? (
             <Box>
                 <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
@@ -52,19 +50,19 @@ const ApplicationBar = () => {
                     }}
                     sx={{ mt: 1 }} // Adds spacing between the avatar and dropdown
                 >
-                    <MenuItem onClick={handleMenuClose}>
+                    <MenuItem onClick={handleMenuClose} key={1}>
                         <Typography>Edit Profile</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleMenuClose}>
+                    <MenuItem onClick={handleMenuClose} key={2}>
                         <Typography>Upload pics</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleMenuClose}>
+                    <MenuItem onClick={handleMenuClose} key={3}>
                         <Typography>Download my biodata</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleMenuClose}>
+                    <MenuItem onClick={handleMenuClose} key={4}>
                         <Typography>Delete my account</Typography>
                     </MenuItem>
-                    <MenuItem
+                    <MenuItem key={5}
                         onClick={() => {
                             navigate("/logout");
                             handleMenuClose();

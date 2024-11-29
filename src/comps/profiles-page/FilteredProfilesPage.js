@@ -1,3 +1,4 @@
+
 import React, { useState,useEffect,useRef } from 'react';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import ProfileCard from '../profile-card/profileCard';
@@ -7,10 +8,13 @@ import {FilterMenu} from '../filter/FilterMenu';
 import { getProfiles} from '../../services/apiService';
 import { useAuth } from '../auth/authctx';
 import Skeleton from '@mui/material/Skeleton';
+import { useFilter } from '../filter/filterctx';
+import { Chip, Stack } from "@mui/material";
 
 
 
-const ProfilesPage = () => {
+const FilteredProfilesPage = () => {
+  const {filterParams,removeFilter} = useFilter();
   const [profiles,setProfiles] = useState([]);
   const {token} = useAuth();
   const [offset,setOffset] = useState(0);
@@ -20,13 +24,16 @@ const ProfilesPage = () => {
   const limit = 40;
   
 
-  const loadProfiles = async () => { 
+  const loadFilteredProfiles = async () => { 
     console.log('profiles after ',profiles);
     if (loading || (hasMore != null && !hasMore)) {
       console.log('returning due to loading');
       return
     }
-    let qp =  `?offset=${offset}&limit=${limit}`
+
+    const qp = Object.entries(filterParams).reduce((acc, [key, value]) => { return acc + `&${key}=${value}`; },  
+        `?offset=${offset}&limit=${limit}`);
+
     try{
       setLoading(true);
       const response = await getProfiles(token,qp);
@@ -44,9 +51,10 @@ const ProfilesPage = () => {
   }
 
 useEffect(() => {
-  loadProfiles();
+  console.log('useEffect of mutating filterParams');
+  loadFilteredProfiles(); 
   incrementOffset(offset);
-} ,[]);
+} ,[filterParams]);
 
 
 const incrementOffset = (prev) => { console.log('prev limit', prev,limit);;setOffset(prev+ limit); };
@@ -59,7 +67,7 @@ const incrementOffset = (prev) => { console.log('prev limit', prev,limit);;setOf
       console.log('entries',entries);
       if (entries[0].isIntersecting ) {
         console.log("loading more");
-        loadProfiles();
+        loadFilteredProfiles();
       }
     },
     { threshold: 1.0 } // Fully visible element triggers
@@ -89,11 +97,55 @@ const handleClose = () => {
 
   const isFilterMenuOpen = Boolean(anchorEl);
 
+  const handleDelete = (keyToRemove) => {
+    console.log('key to remove', keyToRemove);
+    removeFilter(keyToRemove);
+    console.log('filter params',filterParams);
+  };
+
+  const formatLabel = (key,value) => {
+    let formattedValue = value;
+
+    return `${key
+      .split("_") // Split snake_case into words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+      .join(" ")}: ${formattedValue}` ; // Join words with a space
+  };
+
   return (
     <div className="h-screen bg-custom-c1">
       <ApplicationBar />
       <div className="min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit">
 
+      <Stack direction="row" spacing={1} marginTop={5}
+      sx={{
+        flexWrap: "wrap", // Allow wrapping for responsiveness
+        justifyContent: "center", // Center items on smaller screens
+        gap: 1, // Add spacing between chips for better wrapping
+        '@media (max-width:600px)': {
+          justifyContent: "flex-start", // Align items to the left on smaller screens
+        },
+      }}
+      >
+      {Object.entries(filterParams).map(([key, value]) => (
+        <Chip
+          key={key}
+          label={formatLabel(key,value)}
+          sx = {{
+            backgroundColor:  "#F0D0A6",
+              color: "#492533",
+            '& .MuiChip-deleteIcon': {
+              color: '#492533', // Set close icon color
+            },
+            '& .MuiChip-deleteIcon:hover': {
+              color: 'darkred', // Set close icon hover color
+            },
+
+          }}
+          onDelete={() => handleDelete(key)}
+        />
+      ))}
+    </Stack>
         {
         profiles.length == 0 &&
           <>
@@ -156,4 +208,4 @@ const handleClose = () => {
   );
 };
 
-export default ProfilesPage;
+export default FilteredProfilesPage;
