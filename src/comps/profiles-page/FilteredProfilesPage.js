@@ -26,7 +26,7 @@ const FilteredProfilesPage = () => {
 
   const loadFilteredProfiles = async () => { 
     console.log('profiles after ',profiles);
-    if (loading || (hasMore != null && !hasMore)) {
+    if (loading ) {
       console.log('returning due to loading');
       return
     }
@@ -52,8 +52,11 @@ const FilteredProfilesPage = () => {
 
 useEffect(() => {
   console.log('useEffect of mutating filterParams');
+  setProfiles([]);
   loadFilteredProfiles(); 
-  incrementOffset(offset);
+  setOffset((prev) => { return 0 });
+  setHasMore(false);
+  setLoading(false);
 } ,[filterParams]);
 
 

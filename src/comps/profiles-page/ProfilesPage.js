@@ -8,8 +8,6 @@ import { getProfiles} from '../../services/apiService';
 import { useAuth } from '../auth/authctx';
 import Skeleton from '@mui/material/Skeleton';
 
-
-
 const ProfilesPage = () => {
   const [profiles,setProfiles] = useState([]);
   const {token} = useAuth();

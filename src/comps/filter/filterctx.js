@@ -15,9 +15,11 @@ export const FilterProvider = ({ children }) => {
         setFilterParams({});
     }
     
-    const removeFilter = (key) => {
-        delete filterParams[key];
-        setFilterParams(filterParams);
+    const removeFilter = (keyToRemove) => {
+        let newFilter = Object.fromEntries(
+            Object.entries(filterParams).filter(([key]) => key !== keyToRemove)
+          );
+        setFilterParams(newFilter);
     }
     
     return (    
