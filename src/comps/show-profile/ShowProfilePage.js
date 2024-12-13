@@ -10,8 +10,8 @@ export const ShowProfilePage = () => {
     const [e,setR] = useState([]);
     const profileId = atob(pid);
     const {token}= useAuth();
-
-    useEffect(() => {
+    
+    const getProfileData = async () => {
         try {
             const response = getProfile(token,profileId)
             setR(response.data.data);
@@ -19,6 +19,11 @@ export const ShowProfilePage = () => {
         } catch (e) {
             console.log("error resp", e);            
         }
+
+    }
+
+    useEffect(() => {
+        getProfileData();
     }, []);
 
     return (<>
