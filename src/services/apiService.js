@@ -118,4 +118,4 @@ export const deletePic = (token, id) => { apiClient(token).delete(`/api/v1/pics/
 export const updateProfile = (token, id, payload) => { apiClient(token).put(`/api/v1/profiles/`+ id + "/" ,{id: id, profile: payload}) }
 
 // to set profile pic
-export const setProfilePic = (token, id ) => { apiClient(token).put(`/api/v1/profiles/`+ id + "/" ,{id: id }) }
+export const setProfilePic = (token, id ) => { apiClient(token).put(`/api/v1/set/profile/pic` ,{id: id }) }
