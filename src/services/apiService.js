@@ -64,6 +64,7 @@ export const aboutMeAndContact = (token, data) => apiClient(token).post('/api/v1
 
 export const uploadVerificationDoc = (token, formData) => apiUpload(token).post('/api/v1/verification/doc', formData);
 
+// upload pics
 export const uploadPics = (token, formData) =>  apiUpload(token).post('/api/v1/bulk/picb', formData);
 
 export const getProfiles = (token, qp) => apiClient(token).get(`/api/v1/profiles${qp}`);
@@ -109,3 +110,9 @@ export const getChatForProfile = (token, profileId, offset) =>  apiClient(token)
 export const triggerFirstCountOnLoad = (token,) => { apiClient(token).get(`/api/v1/counts/subscribe`) };
 
 export const capturePayment = (token, payment_id, amount) => { apiClient(token).post(`/api/v1/payments/`, { payment: { payment_id: payment_id, amount: amount } }) }
+
+// to delete pic
+export const deletePic = (token, id) => { apiClient(token).delete(`/api/v1/pics/`+ id) }
+
+// to edit profile
+export const updateProfile = (token, id, payload) => { apiClient(token).put(`/api/v1/profiles/`+ id + "/" ,{id: id, profile: payload}) }
