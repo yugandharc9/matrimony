@@ -176,9 +176,8 @@ export const capturePayment = (token, payment_id, amount) => {
 };
 
 // to delete pic
-export const deletePic = (token, id) => {
+export const deletePic = (token, id) =>
   apiClient(token).delete(`/api/v1/pics/` + id);
-};
 
 // to edit profile
 export const updateProfile = (token, id, payload) =>

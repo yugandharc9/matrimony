@@ -18,7 +18,6 @@ import showNotification from '../notify/notify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 import { TDatePicker, TTimePicker } from '../input/DtPicker';
-import { getMyProfile } from '../../services/apiService';
 import { useMyProfileData } from '../my-profile-data/myprofilectx';
 
 const AddProfileInfoPage = ({ operation }) => {
@@ -137,6 +136,7 @@ const AddProfileInfoPage = ({ operation }) => {
 
       if (response.status === 200) {
         showNotification('success', '', 'Profile updated', 2000);
+        updateProfileData();
       } else {
         showNotification('danger', '', response.data.error, 2000);
       }
