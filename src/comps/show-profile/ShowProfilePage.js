@@ -8,11 +8,35 @@ import ProfileBottomBar from '../application-bar/ProfileBottomBar';
 import BottomBar2 from '../application-bar/BottomBar';
 
 const settings = {
-  dots: true,
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
   adaptiveHeight: true,
+  appendDots: (dots) => (
+    <div
+      style={{
+        backgroundColor: 'transparent',
+        borderRadius: '10px',
+        padding: '40px',
+        zIndex: '1',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <ul
+        style={{
+          margin: '0px',
+          width: 'fit-content',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          fontSize: '12px',
+          borderRadius: '10px',
+          backdropFilter: 'blur(10px)',
+        }}
+      >
+        {dots}
+      </ul>
+    </div>
+  ),
 };
 
 export const ShowProfilePage = () => {
@@ -65,6 +89,7 @@ export const ShowProfilePage = () => {
           <Slider
             {...settings}
             infinite={e?.pics?.length > 1}
+            dots={e?.pics?.length > 1}
             className='rounded-lg overflow-hidden relative my-5 mx-5 '
           >
             {e?.pics?.length > 0 ? (
