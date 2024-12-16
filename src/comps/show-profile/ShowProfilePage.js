@@ -35,6 +35,26 @@ export const ShowProfilePage = () => {
     getProfileData();
   }, []);
 
+  const getValidTime = (birthtime) => {
+    let birthtimeValue = new Date(birthtime);
+    if (isNaN(birthtimeValue.getTime())) {
+      birthtimeValue = new Date(`1970-01-01T${birthtime}:00Z`);
+    }
+    birthtimeValue.setMinutes(
+      birthtimeValue.getMinutes() - birthtimeValue.getTimezoneOffset()
+    );
+    if (!isNaN(birthtimeValue.getTime())) {
+      return birthtimeValue.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } else {
+      console.error('Invalid birthtime value:', birthtime);
+    }
+  };
+
+  console.log(e);
   return (
     <div className='h-screen bg-custom-c1 overflow-auto'>
       <ApplicationBar />
@@ -83,7 +103,16 @@ export const ShowProfilePage = () => {
                   Age:
                 </span>
                 <span className='font-semibold text-[#fff] text-left'>
+                  Gender:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Height:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
                   Marital Status:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Physically challenged:
                 </span>
                 <span className='font-semibold text-[#fff] text-left'>
                   City:
@@ -94,7 +123,16 @@ export const ShowProfilePage = () => {
                   {e?.age} years
                 </span>
                 <span className='flex-1 text-[#fff] text-left'>
+                  {e?.gender}
+                </span>
+                <span className='flex-1 text-[#fff] text-left'>
+                  {e?.height_ft}
+                </span>
+                <span className='flex-1 text-[#fff] text-left'>
                   {e?.maritial_status}
+                </span>
+                <span className='flex-1 text-[#fff] text-left'>
+                  {e?.challenged === 'yes' ? 'Yes' : 'No'}
                 </span>
                 <span className='flex-1 text-[#fff] text-left'>
                   {e?.current_city}
@@ -190,10 +228,22 @@ export const ShowProfilePage = () => {
             <div className='flex justify-center w-full gap-10'>
               <div className='flex flex-col'>
                 <span className='font-semibold text-[#fff] text-left'>
-                  Birthdate:
+                  Birth Date:
                 </span>
                 <span className='font-semibold text-[#fff] text-left'>
-                  Another feild:
+                  Birth Time:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Birth Name:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Rashi:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Gotra:
+                </span>
+                <span className='font-semibold text-[#fff] text-left'>
+                  Mangalik:
                 </span>
               </div>
               <div className='flex flex-col'>
@@ -201,7 +251,15 @@ export const ShowProfilePage = () => {
                   {e?.birthdate}
                 </span>
                 <span className='flex-1 text-[#fff] text-left'>
-                  Test example
+                  {e?.birthtime ? getValidTime(e?.birthtime) : ''}
+                </span>
+                <span className='flex-1 text-[#fff] text-left'>
+                  {e?.birthname}
+                </span>
+                <span className='flex-1 text-[#fff] text-left'>{e?.rashi}</span>
+                <span className='flex-1 text-[#fff] text-left'>{e?.gotra}</span>
+                <span className='flex-1 text-[#fff] text-left capitalize'>
+                  {e?.mangal_dosh}
                 </span>
               </div>
             </div>
@@ -217,13 +275,13 @@ export const ShowProfilePage = () => {
             <div className='flex justify-center w-full gap-10'>
               <div className='flex flex-col'>
                 <span className='font-semibold text-[#fff] text-left'>
-                  Name:
+                  Contact name:
                 </span>
                 <span className='font-semibold text-[#fff] text-left'>
-                  Number:
+                  Contact phone:
                 </span>
                 <span className='font-semibold text-[#fff] text-left'>
-                  Relation:
+                  Relation with contact:
                 </span>
               </div>
               <div className='flex flex-col'>
