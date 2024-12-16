@@ -5,6 +5,7 @@ import { useAuth } from '../auth/authctx';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import Slider from 'react-slick';
 import ProfileBottomBar from '../application-bar/ProfileBottomBar';
+import BottomBar2 from '../application-bar/BottomBar';
 
 const settings = {
   dots: true,
@@ -54,13 +55,12 @@ export const ShowProfilePage = () => {
     }
   };
 
-  console.log(e);
   return (
     <div className='h-screen bg-custom-c1 overflow-auto'>
       <ApplicationBar />
 
       {e && (
-        <div className='mb-20'>
+        <div className='mb-40'>
           {/* Slider for profile images */}
           <Slider
             {...settings}
@@ -300,6 +300,7 @@ export const ShowProfilePage = () => {
         </div>
       )}
       <ProfileBottomBar />
+      <BottomBar2 active='profiles' />
     </div>
   );
 };
