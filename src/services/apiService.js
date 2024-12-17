@@ -103,15 +103,13 @@ export const unsaveProfile = (token, profileId) => {
   apiClient(token).delete(`/api/v1/bookmarks/${profileId}`);
 };
 
-export const saveProfile = (token, profileID) => {
+export const saveProfile = (token, profileID) =>
   apiClient(token).post(`/api/v1/bookmarks`, { bookmark: { to: profileID } });
-};
 
-export const createChatRequest = (token, profileID) => {
+export const createChatRequest = (token, profileID) =>
   apiClient(token).post(`/api/v1/chatrequests`, {
     chat_request: { to: profileID },
   });
-};
 
 export const cancelChatRequest = (token, profileID) => {
   apiClient(token).delete(`/api/v1/chatrequests/` + profileID + '/');
@@ -134,21 +132,18 @@ export const declineChatRequest = (token, profileId) => {
   });
 };
 
-export const blockChatRequest = (token, profileId) => {
+export const blockChatRequest = (token, profileId) =>
   apiClient(token).post('/api/v1/block/', {
     block_request: { profileId: profileId },
   });
-};
 
-export const unblockChatRequest = (token, profileId) => {
+export const unblockChatRequest = (token, profileId) =>
   apiClient(token).post('/api/v1/unblock/', {
     unblock_request: { profileId: profileId },
   });
-};
 
-export const isThisProfileBlocked = (token, profileId) => {
+export const isThisProfileBlocked = (token, profileId) =>
   apiClient(token).get(`/api/v1/isblock/?profileId=${profileId}`);
-};
 
 export const myPics = (token) => apiClient(token).get('/api/v1/pics');
 

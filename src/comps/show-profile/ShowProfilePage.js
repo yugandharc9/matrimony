@@ -43,6 +43,7 @@ export const ShowProfilePage = () => {
   const { pid } = useParams(); // Destructure `id` from the URL params
   console.log('bProfileId', pid);
   const [e, setR] = useState(null);
+  const [bottomBarStatus, setBottomBarStatus] = useState(null);
   const profileId = atob(pid);
   const { token } = useAuth();
 
@@ -50,7 +51,11 @@ export const ShowProfilePage = () => {
     try {
       const response = await getProfile(token, profileId);
       setR(response.data.data);
-      // console.log('success resp', response.data.data);
+      setBottomBarStatus({
+        is_bookmarked: response?.data?.is_bookmarked,
+        is_chat_requested: response?.data?.is_chat_requested,
+      });
+      // console.log('success resp', response);
     } catch (e) {
       console.log('error resp', e);
     }
@@ -324,7 +329,12 @@ export const ShowProfilePage = () => {
           </div>
         </div>
       )}
-      <ProfileBottomBar />
+      <ProfileBottomBar
+        token={token}
+        userId={atob(pid)}
+        userData={e}
+        bottomBarStatus={bottomBarStatus}
+      />
       <BottomBar2 active='profiles' />
     </div>
   );
