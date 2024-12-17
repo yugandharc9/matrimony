@@ -43,6 +43,7 @@ const UploadPicsPage = () => {
       navigate('/profiles');
       showNotification('danger', '', 'Something went wrong', 2000);
     } finally {
+      updateProfileData();
       btnRef.current?.setLoadingOff();
     }
   };
