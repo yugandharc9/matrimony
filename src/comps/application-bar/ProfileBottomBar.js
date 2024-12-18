@@ -83,6 +83,8 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
     } catch (error) {
       console.log('error download biodata', error);
       showNotification('danger', '', 'Block user failed', 2000);
+    } finally {
+      getBlockedStatus();
     }
   };
 
@@ -93,6 +95,8 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
     } catch (error) {
       console.log('error download biodata', error);
       showNotification('danger', '', 'Unblock user failed', 2000);
+    } finally {
+      getBlockedStatus();
     }
   };
 
@@ -199,14 +203,8 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
           sx={{
             borderRadius: `${
               bottomBarStatus?.is_bookmarked === true &&
-              bottomBarStatus?.is_chat_requested === true &&
-              !isBlocked
-                ? '10px'
-                : bottomBarStatus?.is_bookmarked === true &&
-                  bottomBarStatus?.is_chat_requested === true
+              bottomBarStatus?.is_chat_requested === true
                 ? '10px 0px 0px 10px'
-                : !isBlocked
-                ? '0px 10px 10px 0px'
                 : ''
             }`,
 
@@ -214,16 +212,15 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
           }}
           onClick={handleBioDownload}
         />
-        {isBlocked && (
-          <BottomNavigationAction
-            label='Block'
-            icon={<NotInterested />}
-            component={Link}
-            to='#'
-            sx={{ borderRadius: '0px 10px 10px 0px', ...bottomBarButtonStyle }}
-            onClick={handleBlockUser}
-          />
-        )}
+
+        <BottomNavigationAction
+          label={isBlocked ? 'Unblock' : 'Block'}
+          icon={<NotInterested />}
+          component={Link}
+          to='#'
+          sx={{ borderRadius: '0px 10px 10px 0px', ...bottomBarButtonStyle }}
+          onClick={handleBlockUser}
+        />
       </BottomNavigation>
     </div>
   );
