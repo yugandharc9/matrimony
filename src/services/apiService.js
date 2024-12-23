@@ -164,11 +164,10 @@ export const triggerFirstCountOnLoad = (token) => {
   apiClient(token).get(`/api/v1/counts/subscribe`);
 };
 
-export const capturePayment = (token, payment_id, amount) => {
+export const capturePayment = (token, payment_id, amount) =>
   apiClient(token).post(`/api/v1/payments/`, {
     payment: { payment_id: payment_id, amount: amount },
   });
-};
 
 // to delete pic
 export const deletePic = (token, id) =>
@@ -185,5 +184,8 @@ export const updateProfile = (token, id, payload) =>
 export const setProfilePic = (token, id) => {
   apiClient(token).put(`/api/v1/set/profile/pic`, { id: id });
 };
+
+// get all plans
+export const getAllPlansDetails = () => apiClient().get(`/all/plans`);
 
 
