@@ -8,7 +8,7 @@ import FeaturedAdvertisingPage from "../advt-page/AdvtPage";
 import SentChatRequestsPage from "../sent-chat/SentChat";
 import ReceivedChatRequestsPage from "../recv-chat/RecvChat";
 import MyChatsPage from "../my-chats/MyChats";
-import SubscriptionsPage from "../subscriptions/subscriptions";
+import SubscriptionsPage from "../subscriptions/SubscriptionsPage";
 import UploadDocPage from "../add-photos/AddDocs";
 import UploadPicsPage from "../add-photos/AddPhotos";
 import {FilterMenu} from "../filter/FilterMenu";
