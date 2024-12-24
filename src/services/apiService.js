@@ -169,9 +169,8 @@ export const capturePayment = (token, payment_id, amount) =>
     payment: { payment_id: payment_id, amount: amount },
   });
 
-export const createOrder = (token, amount) =>{
-  apiClient(token).get(`/api/v1/order?amount=${amount}` )
-}
+export const createOrder = (token, amount) =>
+  apiClient(token).get(`/api/v1/order?amount=${amount}`);
 
 // to delete pic
 export const deletePic = (token, id) =>

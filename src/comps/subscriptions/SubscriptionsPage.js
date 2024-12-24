@@ -3,7 +3,7 @@ import { Box, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import { subscriptionFeatures } from '../../constants/constants';
-import { getAllPlansDetails, capturePayment } from '../../services/apiService';
+import { getAllPlansDetails, createOrder } from '../../services/apiService';
 import showNotification from '../notify/notify';
 import { useAuth } from '../auth/authctx';
 import { useMyProfileData } from '../my-profile-data/myprofilectx';
@@ -30,16 +30,29 @@ const SubscriptionsPage = () => {
     }
   }, [myProfileData]);
 
+  const initiatePayment = async (planTitle, amount) => {
+    try {
+      const response = await createOrder(token, amount);
+      if (response.data) {
+        initiateRazorPay(planTitle, amount, response.data);
+      }
+    } catch (error) {
+      console.error('Error in payment:', error);
+      showNotification('danger', '', 'Something went wrong', 2000);
+    }
+  };
+
   // Callbacks for initiating Razorpay payment
-  const initiatePayment = (planTitle, amount, onPaymentSuccess) => {
+  const initiateRazorPay = (planTitle, amount, orderDetails) => {
     const options = {
       key: process.env.REACT_APP_RAZORPAY_KEY, // Your Razorpay Key
       amount: amount.toString(), // Amount in paise
       currency: 'INR',
       description: `${planTitle} subscription`,
+      order_id: orderDetails.id, // when testing in local environment, comment this line
       handler: function (response) {
         // On successful payment
-        onPaymentSuccess(response);
+        showNotification('success', '', 'Payment was successful', 2000);
       },
       theme: {
         color: '#4e8ef7',
@@ -62,23 +75,6 @@ const SubscriptionsPage = () => {
       rzp1.open();
     } catch (error) {
       showNotification('danger', '', 'Something went wrong', 2000);
-    }
-  };
-
-  // Callback for successful payment
-  const handlePaymentSuccess = (paymentResponse, amount) => {
-    // You can make an API call here to save the payment details on your server
-    showNotification('success', '', 'Payment was successful', 2000);
-    savePaymentDetails(paymentResponse.razorpay_payment_id, amount);
-  };
-
-  // save payment data to server
-  const savePaymentDetails = async (paymentId, amount) => {
-    try {
-      const response = await capturePayment(token, paymentId, amount);
-      console.log(response);
-    } catch (error) {
-      console.error('Error saving payment details:', error);
     }
   };
 
@@ -170,12 +166,7 @@ const SubscriptionsPage = () => {
                   borderRadius: '20px',
                 }}
                 onClick={() =>
-                  initiatePayment(
-                    plan.duration,
-                    plan.cost_in_paise,
-                    (paymentResponse) =>
-                      handlePaymentSuccess(paymentResponse, plan.cost_in_paise)
-                  )
+                  initiatePayment(plan.duration, plan.cost_in_paise)
                 }
               >
                 For {plan.duration} at {formatCurrency(plan.cost_in_rupee)}
