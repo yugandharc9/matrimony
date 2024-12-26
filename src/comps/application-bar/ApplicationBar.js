@@ -69,6 +69,9 @@ const ApplicationBar = () => {
               <MenuItem onClick={() => handleMenuClose('upload/pics')} key={2}>
                 <Typography>Upload pics</Typography>
               </MenuItem>
+              <MenuItem onClick={() => handleMenuClose('subscription')} key={3}>
+                <Typography>Purchase Plan</Typography>
+              </MenuItem>
               <MenuItem onClick={handleMenuClose} key={3}>
                 <Typography>Download my biodata</Typography>
               </MenuItem>
