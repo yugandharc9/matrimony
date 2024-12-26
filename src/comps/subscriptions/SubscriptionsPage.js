@@ -3,7 +3,11 @@ import { Box, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import ApplicationBar from '../application-bar/ApplicationBar';
 import { subscriptionFeatures } from '../../constants/constants';
-import { getAllPlansDetails, createOrder } from '../../services/apiService';
+import {
+  getAllPlansDetails,
+  createOrder,
+  capturePayment,
+} from '../../services/apiService';
 import showNotification from '../notify/notify';
 import { useAuth } from '../auth/authctx';
 import { useMyProfileData } from '../my-profile-data/myprofilectx';
@@ -53,6 +57,7 @@ const SubscriptionsPage = () => {
       handler: function (response) {
         // On successful payment
         showNotification('success', '', 'Payment was successful', 2000);
+        savePaymentDetails(response.razorpay_payment_id, amount);
       },
       theme: {
         color: '#4e8ef7',
@@ -87,6 +92,17 @@ const SubscriptionsPage = () => {
     }
   };
 
+  const savePaymentDetails = async (payment_id, amount) => {
+    try {
+      const response = await capturePayment(token, payment_id, amount);
+
+      updateProfileData();
+    } catch (error) {
+      console.error('Error in saving payment:', error);
+      showNotification('danger', '', 'Something went wrong', 2000);
+    }
+  };
+
   useEffect(() => {
     getSubscriptionPlans();
   }, []);
@@ -113,7 +129,7 @@ const SubscriptionsPage = () => {
           </div>
           <div className='flex flex-col'>
             <span className='flex-1 text-[#fff] text-left'>
-              X months Plan{' '}
+              {myProfileData?.current_plan} Plan{' '}
               {planValidity !== '' ? `(Expires in ${planValidity} days)` : ''}
             </span>
           </div>
