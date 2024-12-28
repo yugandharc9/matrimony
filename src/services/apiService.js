@@ -191,4 +191,12 @@ export const setProfilePic = (token, id) => {
 // get all plans
 export const getAllPlansDetails = () => apiClient().get(`/all/plans`);
 
+// getProfiles with only view access
+export const getProfilesForView = (qp) =>
+  apiClient().get(`/api/v1/view/profiles/${qp}`);
+
+// getProfile by id with only view access
+export const getProfileByIdForView = (profileID) =>
+  apiClient().get(`/api/v1/view/profile?id=${profileID}`);
+
 
