@@ -19,6 +19,8 @@ import {
 } from '../../services/apiService';
 import { ConfirmDialog } from '../dialog/ConfirmDialog';
 import showNotification from '../notify/notify';
+import { useAuth } from '../auth/authctx';
+import { Navigate } from 'react-router-dom';
 
 const bottomBarButtonStyle = {
   color: '#492533',
@@ -29,12 +31,14 @@ const bottomBarButtonStyle = {
   },
 };
 
-const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
+const ProfileBottomBar = ({ userId, userData, bottomBarStatus }) => {
   const [value, setValue] = useState(0);
   const confirmDialogRef = useRef();
   const currentDialogFunction = useRef('');
   const [confirmDialogText, setConfirmDialogText] = useState('');
   const [isBlocked, setIsBlocked] = useState(false);
+  const [isRedirect, setIsRedirect] = useState(false);
+  const { token, isAuthenticated } = useAuth();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -49,10 +53,17 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
   };
 
   useEffect(() => {
-    getBlockedStatus();
+    if (isAuthenticated) {
+      getBlockedStatus();
+    }
   }, []);
 
   const handleBioDownload = async () => {
+    // if not authenticated redirect to signup
+    if (!isAuthenticated) {
+      redirectToSignup();
+      return;
+    }
     try {
       const resp = await getBioDataOfProfile(token, userId);
       let fileUrl = resp.data.url;
@@ -101,6 +112,11 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
   };
 
   const handleBlockUser = () => {
+    // if not authenticated redirect to signup
+    if (!isAuthenticated) {
+      redirectToSignup();
+      return;
+    }
     if (isBlocked) {
       // already blocked need to unblock
       unblockUser();
@@ -139,10 +155,24 @@ const ProfileBottomBar = ({ token, userId, userData, bottomBarStatus }) => {
     }
   };
 
-  const openConfirmDialog = (text) => {
-    setConfirmDialogText(text);
-    confirmDialogRef.current.openDialog();
+  // redirect to signup page if not authenticated
+  const redirectToSignup = () => {
+    showNotification('warning', '', 'Please signup to continue', 2000);
+    setIsRedirect(true);
   };
+
+  const openConfirmDialog = (text) => {
+    if (isAuthenticated) {
+      setConfirmDialogText(text);
+      confirmDialogRef.current.openDialog();
+    } else {
+      redirectToSignup();
+    }
+  };
+
+  if (isRedirect) {
+    return <Navigate to='/signup' replace />;
+  }
 
   return (
     <div className='flex justify-center'>
