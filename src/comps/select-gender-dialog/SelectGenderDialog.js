@@ -7,76 +7,109 @@ import {
   DialogActions,
   Button,
   FormControl,
-  Select,
-  MenuItem,
-  OutlinedInput,
-  FormHelperText,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from '@mui/material';
 
-function SelectGenderDialog({ open, onClose, selectedGenderForView }) {
-  const [gender, setGender] = React.useState('');
-  const [isError, setIsError] = React.useState(false);
+function SelectGenderDialog({
+  open,
+  onClose,
+  setGenderModal,
+  selectedGenderForView,
+}) {
+  const [gender, setGender] = React.useState('male');
 
   useEffect(() => {
     if (selectedGenderForView !== '') {
       // this is opposite as we store the value that needs to be fetched i.e the opposite gender so in setting in drop we set what was selected
-      setGender(selectedGenderForView === 'male' ? 'Female' : 'Male');
+      setGender(selectedGenderForView === 'male' ? 'female' : 'male');
     }
   }, [selectedGenderForView]);
 
   const handleChange = (event) => {
-    setIsError(false);
     setGender(event.target.value);
   };
 
   const handleSubmit = async () => {
-    if (gender === '') {
-      setIsError(true);
-      return;
+    const previousSelectedGender =
+      selectedGenderForView !== ''
+        ? selectedGenderForView === 'male'
+          ? 'female'
+          : 'male'
+        : '';
+
+    if (previousSelectedGender !== gender) {
+      onClose(gender);
+    } else {
+      setGenderModal(false);
     }
-    onClose(gender.toLowerCase());
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={(event, reason) => {
+        if (reason !== 'backdropClick') {
+          onClose();
+        }
+      }}
+      PaperProps={{ style: { backgroundColor: '#492533', color: '#fff' } }}
+    >
       <DialogTitle>Select your gender</DialogTitle>
       <DialogContent sx={{ paddingBottom: '0px' }}>
-        <FormControl fullWidth>
-          <Select
-            error={isError}
-            displayEmpty
-            labelId='selected-gender-label'
+        <FormControl>
+          <RadioGroup
+            aria-labelledby='selected-gender-label'
+            name='radio-buttons-group'
             value={gender}
-            label='Gender'
             onChange={handleChange}
-            input={<OutlinedInput />}
-            renderValue={(selected) => {
-              if (selected.length === 0) {
-                return <em>Select Gender</em>;
-              }
-
-              return selected;
-            }}
           >
-            <MenuItem disabled value=''>
-              <em>Select Gender</em>
-            </MenuItem>
-            <MenuItem value={'Male'}>Male</MenuItem>
-            <MenuItem value={'Female'}>Female</MenuItem>
-          </Select>
-          {isError && (
-            <FormHelperText error={true} sx={{ margin: '5px 0px' }}>
-              This is required!
-            </FormHelperText>
-          )}
+            <FormControlLabel
+              value='male'
+              control={
+                <Radio
+                  sx={{ color: '#fff', '&.Mui-checked': { color: '#f0d0a6' } }}
+                />
+              }
+              label={
+                <span style={{ color: gender === 'male' ? '#f0d0a6' : '#fff' }}>
+                  Male
+                </span>
+              }
+            />
+            <FormControlLabel
+              value='female'
+              control={
+                <Radio
+                  sx={{ color: '#fff', '&.Mui-checked': { color: '#f0d0a6' } }}
+                />
+              }
+              label={
+                <span
+                  style={{ color: gender === 'female' ? '#f0d0a6' : '#fff' }}
+                >
+                  Female
+                </span>
+              }
+            />
+          </RadioGroup>
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit} color='primary'>
-          Fetch Profile
-        </Button>
-        <Button onClick={onClose} color='primary'>
-          Cancel
+        <Button
+          onClick={handleSubmit}
+          sx={{
+            border: '1px solid #fff',
+            color: '#fff',
+            textTransform: 'none',
+            '&:hover': {
+              border: '1px solid #fff',
+              color: '#fff',
+            },
+          }}
+        >
+          Search
         </Button>
       </DialogActions>
     </Dialog>
@@ -84,4 +117,5 @@ function SelectGenderDialog({ open, onClose, selectedGenderForView }) {
 }
 
 export default SelectGenderDialog;
+
 
