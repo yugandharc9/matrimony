@@ -157,7 +157,7 @@ const ProfileBottomBar = ({ userId, userData, bottomBarStatus }) => {
 
   // redirect to signup page if not authenticated
   const redirectToSignup = () => {
-    showNotification('warning', '', 'Please signup to continue', 2000);
+    showNotification('success', '', 'Join now', 2000);
     setIsRedirect(true);
   };
 
