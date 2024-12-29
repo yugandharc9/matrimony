@@ -82,12 +82,13 @@ const ProfilesPage = () => {
       const genderValue = window.localStorage.getItem('selectedGender');
       if (genderValue != null) {
         setSelectedGenderForView(genderValue === 'male' ? 'female' : 'male');
-        loadViewProfiles();
       } else {
         setGenderModal(true);
       }
     }
-    incrementOffset(offset);
+    setTimeout(() => {
+      incrementOffset(offset);
+    }, 1000);
   }, []);
 
   const incrementOffset = (prev) => {
@@ -143,6 +144,7 @@ const ProfilesPage = () => {
     window.localStorage.setItem('selectedGender', selectedGender);
     setSelectedGenderForView(selectedGender === 'male' ? 'female' : 'male');
     setProfiles([]);
+    setOffset(0);
     setGenderModal(false);
   };
 
