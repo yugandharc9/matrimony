@@ -16,7 +16,7 @@ const ProfilesPage = () => {
   const observerRef = useRef(null); // Ref for the observer
   const [hasMore, setHasMore] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [genderModal, setGenderModal] = useState(false);
+  const [genderModal, setGenderModal] = useState(false); // show gender selection dialog
   const [selectedGenderForView, setSelectedGenderForView] = useState('');
   const limit = 40;
 
@@ -157,6 +157,7 @@ const ProfilesPage = () => {
       <ApplicationBar />
       <SelectGenderDialog
         open={genderModal}
+        setGenderModal={setGenderModal}
         selectedGenderForView={selectedGenderForView}
         onClose={handleGenderSelectionForView}
       />
