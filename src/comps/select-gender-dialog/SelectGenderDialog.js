@@ -96,7 +96,7 @@ function SelectGenderDialog({
           </RadioGroup>
         </FormControl>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ justifyContent: 'center' }}>
         <Button
           onClick={handleSubmit}
           sx={{
@@ -107,6 +107,7 @@ function SelectGenderDialog({
               border: '1px solid #fff',
               color: '#fff',
             },
+            margin: '10px 0px',
           }}
         >
           Search
