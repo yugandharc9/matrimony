@@ -9,7 +9,7 @@ import {
   AccountCircle,
 } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-//import { useChannel } from '../../hooks/PhoenixHook';
+import { useChannel } from '../../hooks/PhoenixHook';
 import { useAuth } from '../auth/authctx';
 import { Navigate } from 'react-router-dom';
 import showNotification from '../notify/notify';
@@ -19,14 +19,13 @@ const BottomBar2 = ({ active }) => {
   const [isRedirect, setIsRedirect] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  // const countReducer = (state, {event, payload}) => {
-  //   switch (event) {
-  //     case "publish":
-  //     default:
-  //   }
-  // }
+  const countReducer = (state, {event, payload}) => {
+     console.log("state",state,"event",event,"payload",payload);
+  }
 
-  // useChannel(`pub${userId}`,countReducer,{},token,userId);
+  const { token, userId } = useAuth();
+
+  useChannel(`pub${userId}`,countReducer,{},token,userId);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
