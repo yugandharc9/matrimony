@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getProfile } from '../../services/apiService';
+import { getProfile, getProfileByIdForView } from '../../services/apiService';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 import ApplicationBar from '../application-bar/ApplicationBar';
@@ -45,7 +45,29 @@ export const ShowProfilePage = () => {
   const [e, setR] = useState(null);
   const [bottomBarStatus, setBottomBarStatus] = useState(null);
   const profileId = atob(pid);
-  const { token } = useAuth();
+  const { token, isAuthenticated } = useAuth();
+
+  const getProfileDataWithView = async () => {
+    try {
+      const response = await getProfileByIdForView(profileId);
+      setR(response.data.data?.[0]);
+      setBottomBarStatus({
+        is_bookmarked: false,
+        is_chat_requested: false,
+      });
+      // console.log('success resp', response);
+    } catch (e) {
+      console.log('error resp', e);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      getProfileData();
+    } else {
+      getProfileDataWithView();
+    }
+  }, []);
 
   const getProfileData = async () => {
     try {
@@ -60,10 +82,6 @@ export const ShowProfilePage = () => {
       console.log('error resp', e);
     }
   };
-
-  useEffect(() => {
-    getProfileData();
-  }, []);
 
   const getValidTime = (birthtime) => {
     let birthtimeValue = new Date(birthtime);
@@ -330,7 +348,6 @@ export const ShowProfilePage = () => {
         </div>
       )}
       <ProfileBottomBar
-        token={token}
         userId={atob(pid)}
         userData={e}
         bottomBarStatus={bottomBarStatus}
