@@ -4,44 +4,72 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 import { useChannel } from '../../hooks/PhoenixHook';
-import { useEffect,useState,useRef } from 'react';
-import { getChatForProfile,sendMessageToUser } from '../../services/apiService';
+import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import {
+  getChatForProfile,
+  sendMessageToUser,
+} from '../../services/apiService';
+import { useNavigate } from 'react-router-dom';
+import {
+  IconButton,
+  Menu,
+  MenuItem,
+  Button,
+  CircularProgress,
+} from '@mui/material';
+import { MoreVert, Send } from '@mui/icons-material';
+import { Input } from '../input/input';
+import BouncingLoader from '../bouncing-loader/BouncingLoader';
+import moment from 'moment';
 
-
-  const getChannelName = (userID1, userID2) => {
-    if (userID1 < userID2) {
-      return `chat${userID1}:${userID2}`
-    }
-    return `chat${userID2}:${userID1}`
+const getChannelName = (userID1, userID2) => {
+  if (userID1 < userID2) {
+    return `chat${userID1}:${userID2}`;
   }
+  return `chat${userID2}:${userID1}`;
+};
 
-  
+const menuOptions = [
+  { id: 'block', name: 'Block / Unblock' },
+  { id: 'report', name: 'Report' },
+];
+
 export const UserChat = () => {
   const location = useLocation();
   const thread = location.state;
   const { token, userId } = useAuth();
   const [messages, setMessages] = useState([]);
-  const [msgVal, setMsgVal] = useState("");
   const [hasMore, setHasMore] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false); // typing animation
   const observerRef = useRef(null); // Ref for the observer
   const [offset, setOffset] = useState(0);
+  const [activityText, setActivityText] = useState('');
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const menuOpen = Boolean(anchorEl);
+  const [heightOfBottomNav, setHeightOfBottomNav] = useState(55);
+  const messageToSent = useRef();
 
   const messageHandler = (state, { event, payload }) => {
-    console.log("state", state);
-    console.log("event", event);
-    console.log("payload", payload);
-    if(event == "") {  
-      setMessages([...messages, {
-        from: userId,
-        inserted_at: "2022-07-26T16:40:05",
-        message: msgVal,
-     
-    }]);
-    }
-  }
+    console.log('state', state);
+    console.log('event', event);
+    console.log('payload', payload);
 
-  const [stateMsg,broadcast] =  useChannel(
+    if (event == '') {
+      let currentMsg = messageToSent.current.getVal().trim();
+      setMessages([
+        ...messages,
+        {
+          from: userId,
+          inserted_at: '2022-07-26T16:40:05',
+          message: currentMsg,
+        },
+      ]);
+    }
+  };
+
+  const [stateMsg, broadcast] = useChannel(
     getChannelName(thread.from_user, userId),
     messageHandler,
     [],
@@ -49,107 +77,250 @@ export const UserChat = () => {
     userId
   );
 
-  const getChat = async () => {
-    try{
-      const response = await getChatForProfile(token,thread.from_profile,offset)
-      console.log("fullresp",response);
-      console.log("resp",response.data.data);
-      setMessages([...messages,...response.data.data]);
-    } catch (e) {
-      console.log("error is ",e) 
-    } finally{
+  // console.log('stateMsg', stateMsg);
+  // console.log('broadcast', broadcast());
 
-    } 
-  }
+  const getChat = async () => {
+    try {
+      setLoading(true);
+      const response = await getChatForProfile(
+        token,
+        thread.from_profile,
+        offset
+      );
+      // console.log('fullresp', response);
+      // console.log('resp', response.data.data);
+
+      // remove this later
+      const dummyMessage = [
+        {
+          deleted: false,
+          from: 729,
+          id: 1054,
+          inserted_at: '2024-11-22T14:09:02',
+          message:
+            'lipsum as it is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout',
+          to: 917,
+          url: null,
+        },
+        {
+          deleted: false,
+          from: 917,
+          id: 1054,
+          inserted_at: '2024-11-22T12:09:02',
+          message:
+            'lipsum as it is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout',
+          to: 729,
+          url: null,
+        },
+      ];
+
+      setMessages([...response.data.data]);
+    } catch (e) {
+      console.log('error is ', e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getChat();
   }, []);
 
-  const connetChannel = () => {
-  }
-
-  const handleMsgValChange = (e) => {
-    console.log(e.target.value);
-    setMsgVal(e.target.value);
-  }
+  const connetChannel = () => {};
 
   const sendMsg = async () => {
-    try{
-      const response = await sendMessageToUser(token,thread.from_user,msgVal);
-      setMessages([...messages,{
-        from: userId,
-        inserted_at: "2022-07-26T16:40:05",
-        message: msgVal,
-     
-    }]);
-    } catch (e) {
-      console.log("error is ",e) 
-    } finally{
+    try {
+      let currentMsg = messageToSent.current.getVal().trim();
 
-    } 
-  }
+      const response = await sendMessageToUser(
+        token,
+        thread.from_user,
+        currentMsg
+      );
+      setMessages([...messages, response?.data?.data]);
+    } catch (e) {
+      console.log('error is ', e);
+    } finally {
+      messageToSent.current.setVal('');
+      scrollToBottom();
+    }
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
+    }, 500);
+  };
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = (optionId) => {
+    setAnchorEl(null);
+    if (optionId === 'block') {
+      console.log('Block called');
+    } else if (optionId === 'report') {
+      console.log('Report called');
+    }
+  };
+
+  useLayoutEffect(() => {
+    const ele = document.getElementById('bottom-nav-id');
+    const height = ele?.clientHeight;
+    setHeightOfBottomNav(height);
+  }, []);
 
   return (
     <>
-      <div className="h-screen bg-custom-c1">
+      <div className='bg-custom-c1 h-full min-h-screen'>
         <ApplicationBar />
-        <div className="flex flex-row h-16 bg-white">
-          < ArrowBackIosIcon style={{ width: "full", height: "full" }} />
-          <div className="w-1/4 flex justify-center items-center">
-            <img
-              className="rounded-full w-16 h-16 object-cover"
-              src={thread.profile_pic}
-              alt={`${thread.name} ${thread.last_name}`}
+        <div className='fixed w-full z-10'>
+          <div className='flex flex-row h-16 bg-custom-c2 items-center'>
+            <ArrowBackIosIcon
+              sx={{ width: 'full', height: 'full', cursor: 'pointer', ml: 2 }}
+              onClick={() => navigate('/chats')}
             />
-          </div>
-
-          <div className="flex flex-col w-3/4 px-4" >
-            {/* Header Section */}
-            <div className="flex items-center justify-between">
-              <div className="text-3xl text-custom-c4">
-                {thread.name} {thread.last_name}
-              </div>
+            <div className='w-1/4 flex justify-center items-center'>
+              <img
+                className='rounded-full w-16 h-16 object-cover'
+                src={thread.profile_pic}
+                alt={`${thread.name} ${thread.last_name}`}
+              />
             </div>
 
+            <div className='flex flex-col w-2/4 px-4'>
+              {/* Header Section */}
+              <div className='flex items-center justify-between'>
+                <div className='text-left'>
+                  <div className='text-3xl text-custom-c1'>
+                    {thread.name} {thread.last_name}
+                  </div>
+                  <div className='text-sm text-custom-c1'>{activityText}</div>
+                </div>
+                <div>
+                  <IconButton
+                    size='medium'
+                    sx={{ color: 'black' }}
+                    aria-label='more'
+                    id='long-button'
+                    aria-controls={menuOpen ? 'long-menu' : undefined}
+                    aria-expanded={menuOpen ? 'true' : undefined}
+                    aria-haspopup='true'
+                    onClick={handleMenuClick}
+                  >
+                    <MoreVert />
+                  </IconButton>
+                  <Menu
+                    MenuListProps={{
+                      'aria-labelledby': 'long-button',
+                    }}
+                    anchorEl={anchorEl}
+                    open={menuOpen}
+                    onClose={handleMenuClose}
+                  >
+                    {menuOptions.map((option) => (
+                      <MenuItem
+                        key={option.id}
+                        onClick={() => handleMenuClose(option.id)}
+                      >
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="max-w-3xl mx-auto p-4">
-          <div className="space-y-4">
+        <div className='max-w-2xl mx-auto p-4 pb-[10rem] pt-[6rem]'>
+          {loading && (
+            <CircularProgress
+              size={40}
+              sx={{
+                margin: '20px 0px',
+                color: '#f0d0a6',
+              }}
+            />
+          )}
+
+          <div className='space-y-4 '>
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.to == userId ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${
+                  message.to != userId ? 'justify-end' : 'justify-start'
+                }`}
               >
                 <div
-                  className={`max-w-xs p-3 rounded-lg ${message.to == userId ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}
+                  className={`max-w-xs p-3 rounded-lg text-left ${
+                    message.to != userId
+                      ? 'bg-custom-c2 text-custom-c1'
+                      : 'bg-gray-200 text-black'
+                  }`}
                 >
                   {message.message}
+                  <p className='text-right text-xs'>
+                    {moment(message.inserted_at).add('+05:30').format('lll')}
+                  </p>
                 </div>
               </div>
             ))}
+            {typing && (
+              <div key={'typing'} className={`flex justify-start`}>
+                <div
+                  className={`max-w-xs p-3 rounded-lg text-left bg-gray-200 text-black`}
+                >
+                  <BouncingLoader />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <input
-            type="text"
-            value={msgVal}
-            onChange={handleMsgValChange}
-            className="w-full p-3 border border-gray-300 rounded-lg"
-            placeholder="Type a message..."
-          />
-          <button
-            onClick={sendMsg}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Send
-          </button>
+        <div className={`fixed bottom-[${heightOfBottomNav}px] w-full`}>
+          <div className='flex items-center justify-center w-full '>
+            <Input
+              placeholder='Type your message...'
+              ref={messageToSent}
+              type='text'
+              labelName=''
+              styleProps={{ width: '50%', margin: '0px 10px' }}
+              autoComplete='off'
+            />
+
+            <Button
+              onClick={sendMsg}
+              sx={{
+                border: '2px solid #f0d0a6',
+                color: '#492533',
+                textTransform: 'none',
+                '&:hover': {
+                  border: '2px solid #f0d0a6',
+                  color: '#492533',
+                },
+                background: '#f0d0a6',
+                margin: '20px 0px',
+                height: '50px',
+                minWidth: '50px',
+                padding: '0px',
+                borderRadius: '100%',
+              }}
+            >
+              <Send sx={{ fontSize: '20px' }} />
+            </Button>
+          </div>
         </div>
 
-        <BottomBar2 active="chats" />
+        <BottomBar2 active='chats' />
       </div>
     </>
-  )
-}
+  );
+};
+
+
