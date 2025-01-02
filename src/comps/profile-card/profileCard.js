@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Slider from 'react-slick';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ChatIcon from '@mui/icons-material/Chat';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -19,6 +19,8 @@ import {
   declineChatRequest,
   getBioDataOfProfile,
   saveProfile,
+  cancelChatRequest,
+  acceptChatRequest,
 } from '../../services/apiService';
 import { useAuth } from '../auth/authctx';
 import { useNavigate } from 'react-router-dom';
@@ -44,6 +46,8 @@ const ProfileCard = ({
   totalpoints,
   points,
   context,
+  loadSent,
+  loadInvites,
 }) => {
   const superLikeRef = useRef();
   const chatReqRef = useRef();
@@ -162,12 +166,20 @@ const ProfileCard = ({
     profileID,
   }) => {
     if (actionConfirmed) {
-      console.log(`Action confirmed for user ID: ${userID}`);
       try {
-        const resp = null;
-        console.log('success saveProfile', resp);
+        const response = await cancelChatRequest(token, profileID);
+        setTimeout(() => {
+          loadSent();
+        }, 1000);
+        showNotification(
+          'success',
+          '',
+          'Request cancellation successful',
+          2000
+        );
       } catch (e) {
         console.log('error saveProfile', e);
+        showNotification('danger', '', 'Request cancellation failed', 2000);
       }
     }
   };
@@ -179,12 +191,18 @@ const ProfileCard = ({
   }) => {
     if (actionConfirmed) {
       console.log(`Action confirmed for user ID: ${profileID}`);
+      console.log(userID);
       // Additional logic after confirmation
       try {
-        const resp = await acceptChatReqRef(token, profileID);
+        const resp = await acceptChatRequest(token, profileID);
         console.log('success reject chat req', resp);
+        setTimeout(() => {
+          loadInvites();
+        }, 1000);
+        showNotification('success', '', 'Request accepted successful', 2000);
       } catch (e) {
         console.log('error reject chat req', e);
+        showNotification('danger', '', 'Request accept failed', 2000);
       }
       // Additional logic after confirmation
     }
@@ -201,8 +219,13 @@ const ProfileCard = ({
       try {
         const resp = await declineChatRequest(token, profileID);
         console.log('success reject chat req', resp);
+        setTimeout(() => {
+          loadInvites();
+        }, 1000);
+        showNotification('success', '', 'Request decline successful', 2000);
       } catch (e) {
         console.log('error reject chat req', e);
+        showNotification('danger', '', 'Request deline failed', 2000);
       }
       // Additional logic after confirmation
     }
@@ -353,6 +376,7 @@ const ProfileCard = ({
             sx={{
               color: '',
               fontSize: '50px',
+              cursor: 'pointer',
             }}
             //onClick={showProfile(Buffer.from(profileID.toString()).toString("base64"))}
             onClick={() => {
@@ -405,18 +429,6 @@ const ProfileCard = ({
 
           {context == 'interests' && (
             <>
-              <FavoriteIcon
-                sx={{
-                  transform: 'scale(1)',
-                  fontSize: '50px',
-                  transition: 'transform 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'scale(1.2) rotate(20deg)', // Slight scale and rotate on hover
-                  },
-                }}
-                alt='Yes'
-                onClick={openAcceptInterestRequestDialog}
-              />
               <ConfirmDialog
                 ref={acceptInterestReqRef}
                 profileID={profileID}
@@ -432,6 +444,8 @@ const ProfileCard = ({
                   '&:hover': {
                     transform: 'scale(1.2) rotate(20deg)', // Slight scale and rotate on hover
                   },
+                  color: '#FF4F58',
+                  cursor: 'pointer',
                 }}
                 alt='No'
                 onClick={openRejectInterestRequestDialog}
