@@ -19,13 +19,13 @@ const BottomBar2 = ({ active }) => {
   const [isRedirect, setIsRedirect] = useState(false);
   const { isAuthenticated } = useAuth();
 
-  const countReducer = (state, {event, payload}) => {
-     console.log("state",state,"event",event,"payload",payload);
-  }
+  const countReducer = (state, { event, payload }) => {
+    console.log('state', state, 'event', event, 'payload', payload);
+  };
 
   const { token, userId } = useAuth();
 
-  useChannel(`pub${userId}`,countReducer,{},token,userId);
+  useChannel(`pub${userId}`, countReducer, {}, token, userId);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -49,6 +49,7 @@ const BottomBar2 = ({ active }) => {
 
   return (
     <BottomNavigation
+      id='bottom-nav-id'
       value={value}
       onChange={handleChange}
       showLabels
