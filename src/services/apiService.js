@@ -118,19 +118,17 @@ export const cancelChatRequest = (token, profileID) => {
 export const listPendingChatRequest = (token) =>
   apiClient(token).get('/api/v1/chatrequests/?accepted=false&from=0');
 
-export const acceptChatRequest = (token, profileId) => {
+export const acceptChatRequest = (token, profileId) =>
   apiClient(token).post('/api/v1/chatrequests/', {
     id: profileId,
     chat_request: { accepted: true, declined: false },
   });
-};
 
-export const declineChatRequest = (token, profileId) => {
+export const declineChatRequest = (token, profileId) =>
   apiClient(token).post('/api/v1/chatrequests/', {
     id: profileId,
     chat_request: { accepted: false, declined: true },
   });
-};
 
 export const blockChatRequest = (token, profileId) =>
   apiClient(token).post('/api/v1/block/', {
