@@ -16,6 +16,8 @@ const Input = forwardRef(
       inputProps,
       inputLabelProps,
       disabled,
+      styleProps,
+      autoComplete,
     },
     ref
   ) => {
@@ -61,7 +63,9 @@ const Input = forwardRef(
           }}
           InputLabelProps={{ ...inputLabelProps }}
           disabled={disabled}
+          autoComplete={autoComplete ? autoComplete : ''}
           sx={{
+            ...styleProps,
             '& .MuiOutlinedInput-root': {
               backgroundColor: '#492532', // Background color
               color: '#F0D0A6', // Text color
