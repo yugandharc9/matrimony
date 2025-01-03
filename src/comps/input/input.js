@@ -18,6 +18,7 @@ const Input = forwardRef(
       disabled,
       styleProps,
       autoComplete,
+      onChange,
     },
     ref
   ) => {
@@ -25,6 +26,7 @@ const Input = forwardRef(
 
     const handleChange = (e) => {
       setValue(e.target.value);
+      if (onChange) onChange(e.target.value);
     };
 
     const getVal = () => {
