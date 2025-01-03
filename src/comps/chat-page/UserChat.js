@@ -157,13 +157,12 @@ export const UserChat = () => {
 
   useEffect(() => {
     getChat(true);
-    setTimeout(() => {
-      incrementOffset(offset);
-    }, 1000);
   }, []);
 
   const incrementOffset = (prev) => {
-    setOffset(prev + 8);
+    setTimeout(() => {
+      setOffset(prev + 8);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -172,13 +171,13 @@ export const UserChat = () => {
       (entries) => {
         console.log('entries', entries);
         if (entries[0].isIntersecting) {
-          console.log('loading more');
+          console.log('loading more', firstTimeLoading.current);
           if (!firstTimeLoading.current) {
-            getChat();
+            // getChat();
           }
         }
       },
-      { root: null, rootMargin: '0px', threshold: 0 } // Trigger when the element is at the top
+      { root: null, rootMargin: '0px', threshold: 0.5 } // Trigger when the element is at the top
     );
     if (observerRef.current) observer.observe(observerRef.current);
 
@@ -206,7 +205,7 @@ export const UserChat = () => {
       // change this logic
       // setHasMore(response.data.total > offset);
       setHasMore(true);
-      if (hasMore) {
+      if (hasMore || true) {
         incrementOffset(offset);
       }
     } catch (e) {
@@ -304,7 +303,7 @@ export const UserChat = () => {
                 {index == 0 && hasMore && (
                   <div
                     ref={observerRef}
-                    style={{ height: '20px', background: 'transparent' }}
+                    style={{ height: '50px', background: 'transparent' }}
                   />
                 )}
                 <div
