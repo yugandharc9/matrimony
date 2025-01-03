@@ -4,7 +4,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/authctx';
 import { useChannel } from '../../hooks/PhoenixHook';
-import { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {
   getChatForProfile,
   sendMessageToUser,
@@ -21,6 +21,7 @@ import { MoreVert, Send } from '@mui/icons-material';
 import { Input } from '../input/input';
 import BouncingLoader from '../bouncing-loader/BouncingLoader';
 import moment from 'moment';
+import showNotification from '../notify/notify';
 
 const getChannelName = (userID1, userID2) => {
   if (userID1 < userID2) {
@@ -43,6 +44,9 @@ export const UserChat = () => {
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false); // typing animation
   const observerRef = useRef(null); // Ref for the observer
+  const typingRef = useRef(null);
+  const firstTimeLoading = useRef(true);
+  const currentTypingRef = useRef(false);
   const [offset, setOffset] = useState(0);
   const [activityText, setActivityText] = useState('');
   const navigate = useNavigate();
@@ -51,21 +55,31 @@ export const UserChat = () => {
   const [heightOfBottomNav, setHeightOfBottomNav] = useState(55);
   const messageToSent = useRef();
 
+  const scrollToBottom = (timeout = 500) => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth',
+      });
+    }, timeout);
+  };
+
   const messageHandler = (state, { event, payload }) => {
     console.log('state', state);
     console.log('event', event);
     console.log('payload', payload);
 
-    if (event == '') {
-      let currentMsg = messageToSent.current.getVal().trim();
-      setMessages([
-        ...messages,
-        {
-          from: userId,
-          inserted_at: '2022-07-26T16:40:05',
-          message: currentMsg,
-        },
-      ]);
+    if (event == 'message') {
+      if (payload.hasOwnProperty('typing')) {
+        if (payload.userId != userId) {
+          setTyping(payload.typing);
+          scrollToBottom(100);
+        }
+      } else {
+        let currentMsg = payload.message;
+        setMessages([...messages, currentMsg]);
+        scrollToBottom(200);
+      }
     }
   };
 
@@ -77,59 +91,17 @@ export const UserChat = () => {
     userId
   );
 
-  // console.log('stateMsg', stateMsg);
-  // console.log('broadcast', broadcast());
-
-  const getChat = async () => {
-    try {
-      setLoading(true);
-      const response = await getChatForProfile(
-        token,
-        thread.from_profile,
-        offset
-      );
-      // console.log('fullresp', response);
-      // console.log('resp', response.data.data);
-
-      // remove this later
-      const dummyMessage = [
-        {
-          deleted: false,
-          from: 729,
-          id: 1054,
-          inserted_at: '2024-11-22T14:09:02',
-          message:
-            'lipsum as it is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout',
-          to: 917,
-          url: null,
-        },
-        {
-          deleted: false,
-          from: 917,
-          id: 1054,
-          inserted_at: '2024-11-22T12:09:02',
-          message:
-            'lipsum as it is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout',
-          to: 729,
-          url: null,
-        },
-      ];
-
-      setMessages([...response.data.data]);
-    } catch (e) {
-      console.log('error is ', e);
-    } finally {
-      setLoading(false);
-    }
+  const handleBroadcastMessage = (sendMsg) => {
+    broadcast('message', { message: sendMsg });
   };
 
-  useEffect(() => {
-    getChat();
-  }, []);
-
-  const connetChannel = () => {};
+  const updateLastOnline = (lastOnlineDateTime) => {
+    const dateTime = moment(lastOnlineDateTime).add('+05:30').calendar();
+    setActivityText(`Last seen ${dateTime}`);
+  };
 
   const sendMsg = async () => {
+    if (messageToSent.current.getVal().trim() === '') return;
     try {
       let currentMsg = messageToSent.current.getVal().trim();
 
@@ -138,22 +110,15 @@ export const UserChat = () => {
         thread.from_user,
         currentMsg
       );
-      setMessages([...messages, response?.data?.data]);
+      // setMessages([...messages, response?.data?.data]);
+      handleBroadcastMessage(response?.data?.data);
     } catch (e) {
       console.log('error is ', e);
+      showNotification('danger', '', 'Failed to send message');
     } finally {
       messageToSent.current.setVal('');
       scrollToBottom();
     }
-  };
-
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth',
-      });
-    }, 500);
   };
 
   const handleMenuClick = (event) => {
@@ -175,6 +140,88 @@ export const UserChat = () => {
     setHeightOfBottomNav(height);
   }, []);
 
+  const broadcastTyping = (text) => {
+    if (currentTypingRef.current == false) {
+      broadcast('message', { typing: true, userId: userId });
+      currentTypingRef.current = true;
+    }
+
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      broadcast('message', { typing: false, userId: userId });
+      currentTypingRef.current = false;
+    }, 1000);
+  };
+
+  useEffect(() => {
+    getChat(true);
+    setTimeout(() => {
+      incrementOffset(offset);
+    }, 1000);
+  }, []);
+
+  const incrementOffset = (prev) => {
+    setOffset(prev + 8);
+  };
+
+  useEffect(() => {
+    console.log('useEffect [offset, hasMore] start', offset, hasMore);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        console.log('entries', entries);
+        if (entries[0].isIntersecting) {
+          console.log('loading more');
+          if (!firstTimeLoading.current) {
+            getChat();
+          }
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 0 } // Trigger when the element is at the top
+    );
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current); // Cleanup
+    };
+  }, [offset, hasMore]);
+
+  const getChat = async (isScrollToBottom = false) => {
+    if (loading || (hasMore != null && !hasMore)) {
+      console.log('returning due to loading');
+      return;
+    }
+    try {
+      setLoading(true);
+      const response = await getChatForProfile(
+        token,
+        thread.from_profile,
+        offset
+      );
+
+      updateLastOnline(response?.data?.last_online_at);
+      setMessages([...response.data.data, ...messages]);
+
+      // change this logic
+      // setHasMore(response.data.total > offset);
+      setHasMore(true);
+      if (hasMore) {
+        incrementOffset(offset);
+      }
+    } catch (e) {
+      console.log('error is ', e);
+    } finally {
+      setLoading(false);
+      if (isScrollToBottom) {
+        scrollToBottom();
+        setTimeout(() => {
+          firstTimeLoading.current = false;
+        }, 1000);
+      }
+    }
+  };
+
   return (
     <>
       <div className='bg-custom-c1 h-full min-h-screen'>
@@ -193,14 +240,16 @@ export const UserChat = () => {
               />
             </div>
 
-            <div className='flex flex-col w-2/4 px-4'>
+            <div className='flex flex-col w-3/4 md:w-2/4 px-4'>
               {/* Header Section */}
               <div className='flex items-center justify-between'>
                 <div className='text-left'>
-                  <div className='text-3xl text-custom-c1'>
+                  <div className='text-lg md:text-3xl text-custom-c1'>
                     {thread.name} {thread.last_name}
                   </div>
-                  <div className='text-sm text-custom-c1'>{activityText}</div>
+                  <div className='text-xs md:text-sm text-custom-c1'>
+                    {activityText}
+                  </div>
                 </div>
                 <div>
                   <IconButton
@@ -250,26 +299,33 @@ export const UserChat = () => {
           )}
 
           <div className='space-y-4 '>
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.to != userId ? 'justify-end' : 'justify-start'
-                }`}
-              >
+            {messages.map((message, index) => (
+              <React.Fragment key={message.id}>
+                {index == 0 && hasMore && (
+                  <div
+                    ref={observerRef}
+                    style={{ height: '20px', background: 'transparent' }}
+                  />
+                )}
                 <div
-                  className={`max-w-xs p-3 rounded-lg text-left ${
-                    message.to != userId
-                      ? 'bg-custom-c2 text-custom-c1'
-                      : 'bg-gray-200 text-black'
+                  className={`flex ${
+                    message.to != userId ? 'justify-end' : 'justify-start'
                   }`}
                 >
-                  {message.message}
-                  <p className='text-right text-xs'>
-                    {moment(message.inserted_at).add('+05:30').format('lll')}
-                  </p>
+                  <div
+                    className={`max-w-xs p-3 rounded-lg text-left ${
+                      message.to != userId
+                        ? 'bg-custom-c2 text-custom-c1'
+                        : 'bg-gray-200 text-black'
+                    }`}
+                  >
+                    {message.message}
+                    <p className='text-right text-xs'>
+                      {moment(message.inserted_at).add('+05:30').format('lll')}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </React.Fragment>
             ))}
             {typing && (
               <div key={'typing'} className={`flex justify-start`}>
@@ -290,8 +346,12 @@ export const UserChat = () => {
               ref={messageToSent}
               type='text'
               labelName=''
-              styleProps={{ width: '50%', margin: '0px 10px' }}
+              styleProps={{
+                width: { xs: '75%', md: '50%' },
+                margin: '0px 10px',
+              }}
               autoComplete='off'
+              onChange={broadcastTyping}
             />
 
             <Button
