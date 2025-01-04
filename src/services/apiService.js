@@ -119,13 +119,13 @@ export const listPendingChatRequest = (token) =>
   apiClient(token).get('/api/v1/chatrequests/?accepted=false&from=0');
 
 export const acceptChatRequest = (token, profileId) =>
-  apiClient(token).post('/api/v1/chatrequests/', {
+  apiClient(token).put('/api/v1/chatrequests/' + profileId + '/', {
     id: profileId,
     chat_request: { accepted: true, declined: false },
   });
 
 export const declineChatRequest = (token, profileId) =>
-  apiClient(token).post('/api/v1/chatrequests/', {
+  apiClient(token).put('/api/v1/chatrequests/' + profileId + '/', {
     id: profileId,
     chat_request: { accepted: false, declined: true },
   });
@@ -142,6 +142,11 @@ export const unblockChatRequest = (token, profileId) =>
 
 export const isThisProfileBlocked = (token, profileId) =>
   apiClient(token).get(`/api/v1/isblock/?profileId=${profileId}`);
+
+export const reportUser = (token, profileId, reportText) =>
+  apiClient(token).post('/api/v1/user/report', {
+    user_report: { user_to_id: profileId, reason: reportText },
+  });
 
 export const myPics = (token) => apiClient(token).get('/api/v1/pics');
 

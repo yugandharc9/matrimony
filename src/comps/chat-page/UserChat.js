@@ -8,6 +8,10 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {
   getChatForProfile,
   sendMessageToUser,
+  isThisProfileBlocked,
+  blockChatRequest,
+  unblockChatRequest,
+  reportUser,
 } from '../../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,6 +26,8 @@ import { Input } from '../input/input';
 import BouncingLoader from '../bouncing-loader/BouncingLoader';
 import moment from 'moment';
 import showNotification from '../notify/notify';
+import { ConfirmDialog } from '../dialog/ConfirmDialog';
+import ReportUserDialog from '../report-user-dialog/ReportUserDialog';
 
 const getChannelName = (userID1, userID2) => {
   if (userID1 < userID2) {
@@ -31,7 +37,7 @@ const getChannelName = (userID1, userID2) => {
 };
 
 const menuOptions = [
-  { id: 'block', name: 'Block / Unblock' },
+  { id: 'block', name: 'Block ' },
   { id: 'report', name: 'Report' },
 ];
 
@@ -54,12 +60,67 @@ export const UserChat = () => {
   const menuOpen = Boolean(anchorEl);
   const [heightOfBottomNav, setHeightOfBottomNav] = useState(55);
   const messageToSent = useRef();
+  const [isBlocked, setIsBlocked] = useState(false);
+  const confirmDialogRef = useRef();
+  const [confirmDialogText, setConfirmDialogText] = useState('');
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+
+  const getBlockedStatus = async () => {
+    try {
+      const resp = await isThisProfileBlocked(token, thread.from_profile);
+      setIsBlocked(resp.data.is_blocked);
+    } catch (e) {
+      console.log('error getBlockedStatus', e);
+    }
+  };
+
+  const handleBlockUser = () => {
+    if (isBlocked) {
+      // already blocked need to unblock
+      unblockUser();
+      return;
+    } else {
+      // block user
+      blockUser();
+    }
+  };
+
+  const openConfirmDialog = () => {
+    setConfirmDialogText(
+      `Are you sure you want to ${isBlocked ? 'Unblock' : 'Block'} user`
+    );
+    confirmDialogRef.current.openDialog();
+  };
+
+  const blockUser = async () => {
+    try {
+      const resp = await blockChatRequest(token, thread.from_profile);
+      showNotification('success', '', 'Block user successfully', 2000);
+    } catch (error) {
+      console.log('error block user', error);
+      showNotification('danger', '', 'Block user failed', 2000);
+    } finally {
+      getBlockedStatus();
+    }
+  };
+
+  const unblockUser = async () => {
+    try {
+      const resp = await unblockChatRequest(token, thread.from_profile);
+      showNotification('success', '', 'Unblock user successfully', 2000);
+    } catch (error) {
+      console.log('error unblock user', error);
+      showNotification('danger', '', 'Unblock user failed', 2000);
+    } finally {
+      getBlockedStatus();
+    }
+  };
 
   const scrollToBottom = (timeout = 500) => {
     setTimeout(() => {
       window.scrollTo({
         top: document.body.scrollHeight,
-        behavior: 'smooth',
+        behavior: 'instant',
       });
     }, timeout);
   };
@@ -110,7 +171,6 @@ export const UserChat = () => {
         thread.from_user,
         currentMsg
       );
-      // setMessages([...messages, response?.data?.data]);
       handleBroadcastMessage(response?.data?.data);
     } catch (e) {
       console.log('error is ', e);
@@ -128,9 +188,9 @@ export const UserChat = () => {
   const handleMenuClose = (optionId) => {
     setAnchorEl(null);
     if (optionId === 'block') {
-      console.log('Block called');
+      openConfirmDialog();
     } else if (optionId === 'report') {
-      console.log('Report called');
+      openReportDialogBox();
     }
   };
 
@@ -156,13 +216,15 @@ export const UserChat = () => {
   };
 
   useEffect(() => {
+    getBlockedStatus();
     getChat(true);
+    incrementOffset(offset);
   }, []);
 
   const incrementOffset = (prev) => {
     setTimeout(() => {
       setOffset(prev + 8);
-    }, 2000);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -173,11 +235,11 @@ export const UserChat = () => {
         if (entries[0].isIntersecting) {
           console.log('loading more', firstTimeLoading.current);
           if (!firstTimeLoading.current) {
-            // getChat();
+            getChat();
           }
         }
       },
-      { root: null, rootMargin: '0px', threshold: 0.5 } // Trigger when the element is at the top
+      { threshold: 0.5 } // Trigger when the element is at the top
     );
     if (observerRef.current) observer.observe(observerRef.current);
 
@@ -202,10 +264,8 @@ export const UserChat = () => {
       updateLastOnline(response?.data?.last_online_at);
       setMessages([...response.data.data, ...messages]);
 
-      // change this logic
-      // setHasMore(response.data.total > offset);
-      setHasMore(true);
-      if (hasMore || true) {
+      setHasMore(response?.data?.total > offset);
+      if (hasMore) {
         incrementOffset(offset);
       }
     } catch (e) {
@@ -216,14 +276,49 @@ export const UserChat = () => {
         scrollToBottom();
         setTimeout(() => {
           firstTimeLoading.current = false;
-        }, 1000);
+        }, 500);
       }
+    }
+  };
+
+  const openReportDialogBox = () => {
+    setOpenReportDialog(true);
+  };
+
+  const closeReportDialog = () => {
+    setOpenReportDialog(false);
+  };
+
+  const submitReportUserDialog = async (reportText) => {
+    try {
+      const response = await reportUser(token, thread.from_profile, reportText);
+      console.log('response', response);
+      showNotification('success', '', 'Reported user successfully', 2000);
+    } catch (e) {
+      console.log('error is ', e);
+      if (e.response.status === 409) {
+        showNotification('danger', '', e.response.data.error, 2000);
+      } else {
+        showNotification('danger', '', 'Failed to report', 2000);
+      }
+    } finally {
+      closeReportDialog();
     }
   };
 
   return (
     <>
       <div className='bg-custom-c1 h-full min-h-screen'>
+        <ConfirmDialog
+          ref={confirmDialogRef}
+          onConfirm={handleBlockUser}
+          message={confirmDialogText}
+        />
+        <ReportUserDialog
+          open={openReportDialog}
+          onClose={closeReportDialog}
+          onSubmit={submitReportUserDialog}
+        />
         <ApplicationBar />
         <div className='fixed w-full z-10'>
           <div className='flex flex-row h-16 bg-custom-c2 items-center'>
@@ -244,7 +339,10 @@ export const UserChat = () => {
               <div className='flex items-center justify-between'>
                 <div className='text-left'>
                   <div className='text-lg md:text-3xl text-custom-c1'>
-                    {thread.name} {thread.last_name}
+                    {thread.name} {thread.last_name}{' '}
+                    <span className='text-red-500 font-semibold'>
+                      {isBlocked ? ' [Blocked]' : ''}
+                    </span>
                   </div>
                   <div className='text-xs md:text-sm text-custom-c1'>
                     {activityText}
@@ -276,7 +374,9 @@ export const UserChat = () => {
                         key={option.id}
                         onClick={() => handleMenuClose(option.id)}
                       >
-                        {option.name}
+                        {option.id === 'block' && isBlocked
+                          ? 'Unblock'
+                          : option.name}
                       </MenuItem>
                     ))}
                   </Menu>
@@ -303,7 +403,7 @@ export const UserChat = () => {
                 {index == 0 && hasMore && (
                   <div
                     ref={observerRef}
-                    style={{ height: '50px', background: 'transparent' }}
+                    style={{ height: '80px', background: 'transparent' }}
                   />
                 )}
                 <div
@@ -338,44 +438,45 @@ export const UserChat = () => {
           </div>
         </div>
 
-        <div className={`fixed bottom-[${heightOfBottomNav}px] w-full`}>
-          <div className='flex items-center justify-center w-full '>
-            <Input
-              placeholder='Type your message...'
-              ref={messageToSent}
-              type='text'
-              labelName=''
-              styleProps={{
-                width: { xs: '75%', md: '50%' },
-                margin: '0px 10px',
-              }}
-              autoComplete='off'
-              onChange={broadcastTyping}
-            />
+        {!isBlocked && (
+          <div className={`fixed bottom-[${heightOfBottomNav}px] w-full`}>
+            <div className='flex items-center justify-center w-full '>
+              <Input
+                placeholder='Type your message...'
+                ref={messageToSent}
+                type='text'
+                labelName=''
+                styleProps={{
+                  width: { xs: '75%', md: '50%' },
+                  margin: '0px 10px',
+                }}
+                autoComplete='off'
+                onChange={broadcastTyping}
+              />
 
-            <Button
-              onClick={sendMsg}
-              sx={{
-                border: '2px solid #f0d0a6',
-                color: '#492533',
-                textTransform: 'none',
-                '&:hover': {
+              <Button
+                onClick={sendMsg}
+                sx={{
                   border: '2px solid #f0d0a6',
                   color: '#492533',
-                },
-                background: '#f0d0a6',
-                margin: '20px 0px',
-                height: '50px',
-                minWidth: '50px',
-                padding: '0px',
-                borderRadius: '100%',
-              }}
-            >
-              <Send sx={{ fontSize: '20px' }} />
-            </Button>
+                  textTransform: 'none',
+                  '&:hover': {
+                    border: '2px solid #f0d0a6',
+                    color: '#492533',
+                  },
+                  background: '#f0d0a6',
+                  margin: '20px 0px',
+                  height: '50px',
+                  minWidth: '50px',
+                  padding: '0px',
+                  borderRadius: '100%',
+                }}
+              >
+                <Send sx={{ fontSize: '20px' }} />
+              </Button>
+            </div>
           </div>
-        </div>
-
+        )}
         <BottomBar2 active='chats' />
       </div>
     </>
