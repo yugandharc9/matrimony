@@ -1,5 +1,5 @@
 // src/components/BottomNavbar.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import {
   Home,
@@ -19,11 +19,19 @@ const BottomBar2 = ({ active }) => {
   const [chatCount, setChatCount] = useState(0);
   const [isRedirect, setIsRedirect] = useState(false);
   const { isAuthenticated } = useAuth();
+  const previousChatCount = useRef(null);
 
   const countReducer = (state, { event, payload }) => {
     console.log('state', state, 'event', event, 'payload', payload);
     if (event == 'publish' && payload.chat_count >= 0) {
       setChatCount(payload.chat_count);
+      if (
+        previousChatCount.current !== null &&
+        previousChatCount.current < payload.chat_count
+      ) {
+        showNotification('default', '', 'You have a new message', 2000);
+      }
+      previousChatCount.current = payload.chat_count;
     }
   };
 
