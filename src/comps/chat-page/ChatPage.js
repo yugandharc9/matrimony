@@ -235,7 +235,7 @@ const ChatPage = () => {
               <>
                 {threads && threads.length > 0 ? (
                   threads.map((thread, index) => (
-                    <>
+                    <React.Fragment key={index}>
                       <ChatThread thread={thread} />
                       {index == threads.length - 1 && (
                         <div
@@ -243,7 +243,7 @@ const ChatPage = () => {
                           style={{ height: '20px', background: 'transparent' }}
                         />
                       )}
-                    </>
+                    </React.Fragment>
                   ))
                 ) : (
                   <p className='text-custom-c2 text-lg mt-12'>No chats yet</p>
