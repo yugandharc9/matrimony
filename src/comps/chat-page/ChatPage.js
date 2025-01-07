@@ -9,7 +9,7 @@ import {
 } from '../../services/apiService';
 import ChatThread from './ChatThread';
 import ProfileCard from '../profile-card/profileCard';
-import Skeleton from '@mui/material/Skeleton';
+import { Skeleton, CircularProgress } from '@mui/material';
 
 const ChatPage = () => {
   const [threads, setThreads] = useState([]);
@@ -27,9 +27,9 @@ const ChatPage = () => {
     setCurrent(current);
   };
 
-  const loadChatThreads = async () => {
-    console.log('loadignChatTHrada');
-    if (loading || (hasMore != null && !hasMore)) {
+  const loadChatThreads = async (refresh = false) => {
+    console.log('loadingChat Thread');
+    if (!refresh && (loading || (hasMore != null && !hasMore))) {
       console.log('returning due to loading');
       return;
     }
@@ -118,8 +118,6 @@ const ChatPage = () => {
       if (observerRef.current) observer.unobserve(observerRef.current); // Cleanup
     };
   }, [offset, hasMore, loading]);
-
-  console.log(sent);
 
   return (
     <div className='h-screen overflow-auto'>
@@ -235,18 +233,21 @@ const ChatPage = () => {
 
             {current == 'chats' && !loading && (
               <>
-                {' '}
-                {threads.map((thread, index) => (
-                  <>
-                    <ChatThread thread={thread} />
-                    {index == threads.length - 1 && (
-                      <div
-                        ref={observerRef}
-                        style={{ height: '20px', background: 'transparent' }}
-                      />
-                    )}
-                  </>
-                ))}{' '}
+                {threads && threads.length > 0 ? (
+                  threads.map((thread, index) => (
+                    <>
+                      <ChatThread thread={thread} />
+                      {index == threads.length - 1 && (
+                        <div
+                          ref={observerRef}
+                          style={{ height: '20px', background: 'transparent' }}
+                        />
+                      )}
+                    </>
+                  ))
+                ) : (
+                  <p className='text-custom-c2 text-lg mt-12'>No chats yet</p>
+                )}
               </>
             )}
           </div>
@@ -254,61 +255,81 @@ const ChatPage = () => {
       )}
 
       <div className='min-h-screen pb-20 bg-custom-c1 flex flex-wrap justify-center gap-limit'>
-        {current == 'requests' && (
+        {loading && (
+          <div className='flex flex-col items-center w-full mt-12'>
+            <CircularProgress
+              size={40}
+              sx={{
+                margin: '20px 0px',
+                color: '#f0d0a6',
+              }}
+            />
+          </div>
+        )}
+
+        {current == 'requests' && !loading && (
           <>
-            {' '}
-            {invites.map((profile, index) => (
-              <ProfileCard
-                key={index}
-                name={profile.name}
-                age={profile.age}
-                lastName={profile.lastName}
-                current_city={profile.current_city}
-                occupation={profile.occupation}
-                education={profile.education}
-                height_ft={profile.height_ft}
-                work={profile.work}
-                pic={profile.pics}
-                aboutme={profile.aboutme}
-                pics={profile.pics}
-                degree={profile.degree}
-                totalpoints={null}
-                points={profile.points}
-                userID={profile.user_id}
-                profileID={profile.id}
-                loadInvites={loadInvites}
-                context='chatRequests'
-              />
-            ))}{' '}
+            {invites && invites.length > 0 ? (
+              invites.map((profile, index) => (
+                <ProfileCard
+                  key={index}
+                  name={profile.name}
+                  age={profile.age}
+                  lastName={profile.lastName}
+                  current_city={profile.current_city}
+                  occupation={profile.occupation}
+                  education={profile.education}
+                  height_ft={profile.height_ft}
+                  work={profile.work}
+                  pic={profile.pics}
+                  aboutme={profile.aboutme}
+                  pics={profile.pics}
+                  degree={profile.degree}
+                  totalpoints={null}
+                  points={profile.points}
+                  userID={profile.user_id}
+                  profileID={profile.id}
+                  loadInvites={loadInvites}
+                  context='chatRequests'
+                />
+              ))
+            ) : (
+              <p className='text-custom-c2 text-lg mt-12'>
+                No requests received
+              </p>
+            )}
           </>
         )}
 
-        {current == 'sent' && (
+        {current == 'sent' && !loading && (
           <>
-            {' '}
-            {sent.map((profile, index) => (
-              <ProfileCard
-                key={index}
-                name={profile?.to_profile?.name}
-                age={profile?.to_profile?.age}
-                lastName={profile?.to_profile?.lastName}
-                current_city={profile?.to_profile?.current_city}
-                occupation={profile?.to_profile?.occupation}
-                education={profile?.to_profile?.education}
-                height_ft={profile?.to_profile?.height_ft}
-                work={profile?.to_profile?.work}
-                pic={profile?.to_profile?.pics}
-                aboutme={profile?.to_profile?.aboutme}
-                pics={profile?.to_profile?.pics}
-                degree={profile?.to_profile?.degree}
-                totalpoints={null}
-                points={profile?.to_profile?.points}
-                userID={profile?.to_profile?.user_id}
-                profileID={profile?.to_profile?.id}
-                loadSent={loadSent}
-                context='interests'
-              />
-            ))}{' '}
+            {sent && sent.length > 0 ? (
+              sent.map((profile, index) => (
+                <ProfileCard
+                  key={index}
+                  name={profile?.to_profile?.name}
+                  age={profile?.to_profile?.age}
+                  lastName={profile?.to_profile?.lastName}
+                  current_city={profile?.to_profile?.current_city}
+                  occupation={profile?.to_profile?.occupation}
+                  education={profile?.to_profile?.education}
+                  height_ft={profile?.to_profile?.height_ft}
+                  work={profile?.to_profile?.work}
+                  pic={profile?.to_profile?.pics}
+                  aboutme={profile?.to_profile?.aboutme}
+                  pics={profile?.to_profile?.pics}
+                  degree={profile?.to_profile?.degree}
+                  totalpoints={null}
+                  points={profile?.to_profile?.points}
+                  userID={profile?.to_profile?.user_id}
+                  profileID={profile?.to_profile?.id}
+                  loadSent={loadSent}
+                  context='interests'
+                />
+              ))
+            ) : (
+              <p className='text-custom-c2 text-lg mt-12'>No sent requests</p>
+            )}
           </>
         )}
       </div>

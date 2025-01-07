@@ -439,7 +439,10 @@ export const UserChat = () => {
         </div>
 
         {!isBlocked && (
-          <div className={`fixed w-full`} style={{bottom : `${heightOfBottomNav}px`}}>
+          <div
+            className={`fixed w-full`}
+            style={{ bottom: `${heightOfBottomNav}px` }}
+          >
             <div className='flex items-center justify-center w-full '>
               <Input
                 placeholder='Type your message...'
