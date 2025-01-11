@@ -244,7 +244,7 @@ const ProfilesPage = () => {
           onFilterChange={handleFilterChange}
         />
       )}
-      <BottomBar2 active='profiles' />
+      {isAuthenticated && <BottomBar2 active='profiles' />}
     </div>
   );
 };

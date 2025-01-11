@@ -1,5 +1,5 @@
 // src/components/BottomNavbar.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 import {
   Home,
@@ -16,16 +16,28 @@ import showNotification from '../notify/notify';
 
 const BottomBar2 = ({ active }) => {
   const [value, setValue] = useState(0);
+  const [chatCount, setChatCount] = useState(0);
   const [isRedirect, setIsRedirect] = useState(false);
   const { isAuthenticated } = useAuth();
+  const previousChatCount = useRef(null);
 
-  const countReducer = (state, {event, payload}) => {
-     console.log("state",state,"event",event,"payload",payload);
-  }
+  const countReducer = (state, { event, payload }) => {
+    console.log('state', state, 'event', event, 'payload', payload);
+    if (event == 'publish' && payload.chat_count >= 0) {
+      setChatCount(payload.chat_count);
+      if (
+        previousChatCount.current !== null &&
+        previousChatCount.current < payload.chat_count
+      ) {
+        showNotification('default', '', 'You have a new message', 2000);
+      }
+      previousChatCount.current = payload.chat_count;
+    }
+  };
 
   const { token, userId } = useAuth();
 
-  useChannel(`pub${userId}`,countReducer,{},token,userId);
+  useChannel(`pub${userId}`, countReducer, {}, token, userId);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -49,6 +61,7 @@ const BottomBar2 = ({ active }) => {
 
   return (
     <BottomNavigation
+      id='bottom-nav-id'
       value={value}
       onChange={handleChange}
       showLabels
@@ -128,7 +141,16 @@ const BottomBar2 = ({ active }) => {
       {active == 'chats' ? (
         <BottomNavigationAction
           label='Chats'
-          icon={<Message />}
+          icon={
+            <div className='relative'>
+              <Message />
+              {chatCount > 0 && (
+                <span className='absolute right-[-0.7em] top-[-0.7em] min-w-[1.6em] h-[1.6em] rounded-[0.8em] border-[0.05em] border-white bg-red-500 flex justify-center items-center text-[0.6em] text-white'>
+                  {chatCount}
+                </span>
+              )}
+            </div>
+          }
           component={Link}
           to='/chats'
           sx={{
@@ -144,7 +166,16 @@ const BottomBar2 = ({ active }) => {
       ) : (
         <BottomNavigationAction
           label='Chats'
-          icon={<Message />}
+          icon={
+            <div className='relative'>
+              <Message />
+              {chatCount > 0 && (
+                <span className='absolute right-[-0.7em] top-[-0.7em] min-w-[1.6em] h-[1.6em] rounded-[0.8em] border-[0.05em] border-white bg-red-500 flex justify-center items-center text-[0.6em] text-white'>
+                  {chatCount}
+                </span>
+              )}
+            </div>
+          }
           component={Link}
           to='/chats'
           sx={{
